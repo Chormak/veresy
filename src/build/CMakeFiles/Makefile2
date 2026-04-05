@@ -82,12 +82,12 @@ clean: CMakeFiles/veresy_autogen.dir/clean
 CMakeFiles/veresy.dir/all: CMakeFiles/veresy_autogen.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/veresy.dir/build.make CMakeFiles/veresy.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/veresy.dir/build.make CMakeFiles/veresy.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/perun/Документи/GitHub/veresy/src/build/CMakeFiles --progress-num=1,2,3,4,5 "Built target veresy"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/perun/Документи/GitHub/veresy/src/build/CMakeFiles --progress-num=1,2,3,4,5,6 "Built target veresy"
 .PHONY : CMakeFiles/veresy.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/veresy.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/perun/Документи/GitHub/veresy/src/build/CMakeFiles 6
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/perun/Документи/GitHub/veresy/src/build/CMakeFiles 7
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/veresy.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/perun/Документи/GitHub/veresy/src/build/CMakeFiles 0
 .PHONY : CMakeFiles/veresy.dir/rule
@@ -108,7 +108,7 @@ CMakeFiles/veresy.dir/clean:
 CMakeFiles/veresy_autogen.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/veresy_autogen.dir/build.make CMakeFiles/veresy_autogen.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/veresy_autogen.dir/build.make CMakeFiles/veresy_autogen.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/perun/Документи/GitHub/veresy/src/build/CMakeFiles --progress-num=6 "Built target veresy_autogen"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/perun/Документи/GitHub/veresy/src/build/CMakeFiles --progress-num=7 "Built target veresy_autogen"
 .PHONY : CMakeFiles/veresy_autogen.dir/all
 
 # Build rule for subdir invocation for target.

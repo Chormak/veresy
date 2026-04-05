@@ -166,6 +166,30 @@ app/Application.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/veresy.dir/build.make CMakeFiles/veresy.dir/app/Application.cpp.s
 .PHONY : app/Application.cpp.s
 
+data/Database.o: data/Database.cpp.o
+.PHONY : data/Database.o
+
+# target to build an object file
+data/Database.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/veresy.dir/build.make CMakeFiles/veresy.dir/data/Database.cpp.o
+.PHONY : data/Database.cpp.o
+
+data/Database.i: data/Database.cpp.i
+.PHONY : data/Database.i
+
+# target to preprocess a source file
+data/Database.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/veresy.dir/build.make CMakeFiles/veresy.dir/data/Database.cpp.i
+.PHONY : data/Database.cpp.i
+
+data/Database.s: data/Database.cpp.s
+.PHONY : data/Database.s
+
+# target to generate assembly for a file
+data/Database.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/veresy.dir/build.make CMakeFiles/veresy.dir/data/Database.cpp.s
+.PHONY : data/Database.cpp.s
+
 main.o: main.cpp.o
 .PHONY : main.o
 
@@ -251,6 +275,9 @@ help:
 	@echo "... app/Application.o"
 	@echo "... app/Application.i"
 	@echo "... app/Application.s"
+	@echo "... data/Database.o"
+	@echo "... data/Database.i"
+	@echo "... data/Database.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

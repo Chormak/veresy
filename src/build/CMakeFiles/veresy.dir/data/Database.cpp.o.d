@@ -1,11 +1,10 @@
-CMakeFiles/veresy.dir/app/Application.cpp.o: \
- /home/perun/Документи/GitHub/veresy/src/app/Application.cpp \
+CMakeFiles/veresy.dir/data/Database.cpp.o: \
+ /home/perun/Документи/GitHub/veresy/src/data/Database.cpp \
  /usr/include/stdc-predef.h \
- /home/perun/Документи/GitHub/veresy/src/app/Application.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QApplication \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qapplication.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtwidgetsglobal.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qtguiglobal.h \
+ /home/perun/Документи/GitHub/veresy/src/data/Database.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtSql/QSqlDatabase \
+ /usr/include/x86_64-linux-gnu/qt6/QtSql/qsqldatabase.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtSql/qtsqlglobal.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qglobal.h \
  /usr/include/c++/12/type_traits \
  /usr/include/x86_64-linux-gnu/c++/12/bits/c++config.h \
@@ -134,11 +133,8 @@ CMakeFiles/veresy.dir/app/Application.cpp.o: \
  /usr/include/c++/12/tr1/riemann_zeta.tcc \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qversiontagging.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qforeach.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qtgui-config.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qtguiexports.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtwidgets-config.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtwidgetsexports.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qcoreapplication.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtSql/qtsql-config.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtSql/qtsqlexports.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qstring.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qchar.h \
  /usr/include/c++/12/functional /usr/include/c++/12/bits/stl_function.h \
@@ -254,42 +250,13 @@ CMakeFiles/veresy.dir/app/Application.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qanystringview.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qutf8stringview.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qstringtokenizer.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qcoreevent.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qobjectdefs.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qobjectdefs_impl.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qeventloop.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qobject.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qlist.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qhashfunctions.h \
- /usr/include/c++/12/numeric /usr/include/c++/12/bits/stl_numeric.h \
- /usr/include/c++/12/pstl/glue_numeric_defs.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qiterator.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qbytearraylist.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qstringlist.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qalgorithms.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qstringmatcher.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qscopedpointer.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qmetatype.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qcompare.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qscopeguard.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qdatastream.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qiodevicebase.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qiterable.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qmetacontainer.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qcontainerinfo.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qtaggedpointer.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qmath.h \
- /usr/include/c++/12/list /usr/include/c++/12/bits/stl_list.h \
- /usr/include/c++/12/bits/list.tcc /usr/include/c++/12/map \
- /usr/include/c++/12/bits/stl_tree.h /usr/include/c++/12/bits/stl_map.h \
- /usr/include/c++/12/bits/stl_multimap.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qobject_impl.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qbindingstorage.h \
- /usr/include/c++/12/chrono /usr/include/c++/12/bits/chrono.h \
- /usr/include/c++/12/ratio /usr/include/c++/12/ctime \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qnativeinterface.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtSql/QSqlError \
+ /usr/include/x86_64-linux-gnu/qt6/QtSql/qsqlerror.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/QDebug \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qdebug.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qtextstream.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qiodevicebase.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qscopedpointer.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qstringconverter_base.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qcontiguouscache.h \
  /usr/lib/gcc/x86_64-linux-gnu/12/include/limits.h \
@@ -302,62 +269,45 @@ CMakeFiles/veresy.dir/app/Application.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/uio_lim.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qsharedpointer.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qshareddata.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qhashfunctions.h \
+ /usr/include/c++/12/numeric /usr/include/c++/12/bits/stl_numeric.h \
+ /usr/include/c++/12/pstl/glue_numeric_defs.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qsharedpointer_impl.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qmetatype.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qcompare.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qscopeguard.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qdatastream.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qiterable.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qmetacontainer.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qcontainerinfo.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qtaggedpointer.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qalgorithms.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qmath.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qobjectdefs.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qobjectdefs_impl.h \
+ /usr/include/c++/12/list /usr/include/c++/12/bits/stl_list.h \
+ /usr/include/c++/12/bits/list.tcc /usr/include/c++/12/map \
+ /usr/include/c++/12/bits/stl_tree.h /usr/include/c++/12/bits/stl_map.h \
+ /usr/include/c++/12/bits/stl_multimap.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qlist.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qiterator.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qbytearraylist.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qstringlist.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qstringmatcher.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qmap.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qshareddata_impl.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qset.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qhash.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qvarlengtharray.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qcoreapplication_platform.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qwindowdefs.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qpoint.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qsize.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qmargins.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qcursor.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qbitmap.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qpixmap.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qpaintdevice.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qrect.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qcolor.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qrgb.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qrgba64.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qimage.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qpixelformat.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qtransform.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qpolygon.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qregion.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qline.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qguiapplication.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qinputmethod.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qlocale.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qvariant.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qguiapplication_platform.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QMainWindow \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qmainwindow.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qwidget.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qaction.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qkeysequence.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qicon.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qpalette.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qbrush.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qfont.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qfontmetrics.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qfontinfo.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qsizepolicy.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtabwidget.h \
- /home/perun/Документи/GitHub/veresy/src/app/../ui/MainWindow.h \
- /home/perun/Документи/GitHub/veresy/src/app/../data/Database.h \
- /usr/include/x86_64-linux-gnu/qt6/QtSql/QSqlDatabase \
- /usr/include/x86_64-linux-gnu/qt6/QtSql/qsqldatabase.h \
- /usr/include/x86_64-linux-gnu/qt6/QtSql/qtsqlglobal.h \
- /usr/include/x86_64-linux-gnu/qt6/QtSql/qtsql-config.h \
- /usr/include/x86_64-linux-gnu/qt6/QtSql/qtsqlexports.h \
- /usr/include/x86_64-linux-gnu/qt6/QtSql/QSqlError \
- /usr/include/x86_64-linux-gnu/qt6/QtSql/qsqlerror.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/QDebug \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qdebug.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qstring.h \
  /usr/include/x86_64-linux-gnu/qt6/QtSql/QSqlQuery \
  /usr/include/x86_64-linux-gnu/qt6/QtSql/qsqlquery.h \
- /usr/include/x86_64-linux-gnu/qt6/QtSql/qsqldatabase.h
+ /usr/include/x86_64-linux-gnu/qt6/QtSql/qsqldatabase.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qvariant.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qdebug.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qobject.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qobject_impl.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qbindingstorage.h \
+ /usr/include/c++/12/chrono /usr/include/c++/12/bits/chrono.h \
+ /usr/include/c++/12/ratio /usr/include/c++/12/ctime

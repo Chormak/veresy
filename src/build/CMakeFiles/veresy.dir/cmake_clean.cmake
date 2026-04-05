@@ -4,6 +4,8 @@ file(REMOVE_RECURSE
   "veresy_autogen"
   "CMakeFiles/veresy.dir/app/Application.cpp.o"
   "CMakeFiles/veresy.dir/app/Application.cpp.o.d"
+  "CMakeFiles/veresy.dir/data/Database.cpp.o"
+  "CMakeFiles/veresy.dir/data/Database.cpp.o.d"
   "CMakeFiles/veresy.dir/main.cpp.o"
   "CMakeFiles/veresy.dir/main.cpp.o.d"
   "CMakeFiles/veresy.dir/ui/MainWindow.cpp.o"

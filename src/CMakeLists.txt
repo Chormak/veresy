@@ -3,7 +3,7 @@ project(Veresy)
 
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Sql)
 
 add_executable(veresy 
 main.cpp
@@ -11,6 +11,8 @@ app/Application.cpp
 app/Application.h
 ui/MainWindow.cpp
 ui/MainWindow.h
+data/Database.cpp
+data/Database.h
 )
 
-target_link_libraries(veresy PRIVATE Qt6::Widgets)
+target_link_libraries(veresy PRIVATE Qt6::Widgets Qt6::Sql)

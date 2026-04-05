@@ -182,7 +182,16 @@
 		"/usr/lib/x86_64-linux-gnu/cmake/Qt6Widgets/Qt6WidgetsTargets-none.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/Qt6Widgets/Qt6WidgetsAdditionalTargetInfo.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/Qt6Widgets/Qt6WidgetsVersionlessTargets.cmake",
-		"/usr/lib/x86_64-linux-gnu/cmake/Qt6Widgets/Qt6WidgetsMacros.cmake"
+		"/usr/lib/x86_64-linux-gnu/cmake/Qt6Widgets/Qt6WidgetsMacros.cmake",
+		"/usr/lib/x86_64-linux-gnu/cmake/Qt6Sql/Qt6SqlConfigVersion.cmake",
+		"/usr/lib/x86_64-linux-gnu/cmake/Qt6Sql/Qt6SqlConfigVersionImpl.cmake",
+		"/usr/lib/x86_64-linux-gnu/cmake/Qt6Sql/Qt6SqlConfig.cmake",
+		"/usr/share/cmake-3.25/Modules/CMakeFindDependencyMacro.cmake",
+		"/usr/lib/x86_64-linux-gnu/cmake/Qt6Sql/Qt6SqlDependencies.cmake",
+		"/usr/lib/x86_64-linux-gnu/cmake/Qt6Sql/Qt6SqlTargets.cmake",
+		"/usr/lib/x86_64-linux-gnu/cmake/Qt6Sql/Qt6SqlTargets-none.cmake",
+		"/usr/lib/x86_64-linux-gnu/cmake/Qt6Sql/Qt6SqlAdditionalTargetInfo.cmake",
+		"/usr/lib/x86_64-linux-gnu/cmake/Qt6Sql/Qt6SqlVersionlessTargets.cmake"
 	],
 	"CMAKE_SOURCE_DIR" : "/home/perun/\u0414\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u0438/GitHub/veresy/src",
 	"DEP_FILE" : "",
@@ -196,6 +205,12 @@
 			null
 		],
 		[
+			"/home/perun/\u0414\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u0438/GitHub/veresy/src/data/Database.h",
+			"Mu",
+			"QYFM2Z2WYQ/moc_Database.cpp",
+			null
+		],
+		[
 			"/home/perun/\u0414\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u0438/GitHub/veresy/src/ui/MainWindow.h",
 			"Mu",
 			"UYX5XTB5RZ/moc_MainWindow.cpp",
@@ -205,7 +220,14 @@
 	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
 	"INCLUDE_DIR" : "/home/perun/\u0414\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u0438/GitHub/veresy/src/build/veresy_autogen/include",
 	"MOC_COMPILATION_FILE" : "/home/perun/\u0414\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u0438/GitHub/veresy/src/build/veresy_autogen/mocs_compilation.cpp",
-	"MOC_DEFINITIONS" : [ "QT_CORE_LIB", "QT_GUI_LIB", "QT_NO_DEBUG", "QT_WIDGETS_LIB" ],
+	"MOC_DEFINITIONS" : 
+	[
+		"QT_CORE_LIB",
+		"QT_GUI_LIB",
+		"QT_NO_DEBUG",
+		"QT_SQL_LIB",
+		"QT_WIDGETS_LIB"
+	],
 	"MOC_DEPEND_FILTERS" : 
 	[
 		[
@@ -220,6 +242,7 @@
 		"/usr/include/x86_64-linux-gnu/qt6/QtCore",
 		"/usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++",
 		"/usr/include/x86_64-linux-gnu/qt6/QtGui",
+		"/usr/include/x86_64-linux-gnu/qt6/QtSql",
 		"/usr/include",
 		"/usr/include/c++/12",
 		"/usr/include/x86_64-linux-gnu/c++/12",
@@ -261,6 +284,11 @@
 	[
 		[
 			"/home/perun/\u0414\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u0438/GitHub/veresy/src/app/Application.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/home/perun/\u0414\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u0438/GitHub/veresy/src/data/Database.cpp",
 			"Mu",
 			null
 		],
