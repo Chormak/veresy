@@ -1,6 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/veresy_autogen"
   "veresy_autogen/mocs_compilation.cpp"
+  "veresy_autogen/timestamp"
 )
 
 # Per-language clean rules from dependency scanning.

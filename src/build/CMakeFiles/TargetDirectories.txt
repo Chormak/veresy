@@ -1,4 +1,5 @@
 /home/perun/Документи/GitHub/veresy/src/build/CMakeFiles/veresy.dir
 /home/perun/Документи/GitHub/veresy/src/build/CMakeFiles/edit_cache.dir
 /home/perun/Документи/GitHub/veresy/src/build/CMakeFiles/rebuild_cache.dir
+/home/perun/Документи/GitHub/veresy/src/build/CMakeFiles/veresy_autogen_timestamp_deps.dir
 /home/perun/Документи/GitHub/veresy/src/build/CMakeFiles/veresy_autogen.dir
