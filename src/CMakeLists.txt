@@ -16,6 +16,8 @@ data/Database.h
 core/orders/Order.h
 core/orders/OrderManager.cpp
 core/orders/OrderManager.h
+ui/OrderDialog.h
+ui/OrderDialog.cpp
 )
 
 target_link_libraries(veresy PRIVATE Qt6::Widgets Qt6::Sql)
