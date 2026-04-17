@@ -51,7 +51,7 @@ void MainWindow::loadOrders() {
     m_table->setItem(row, 1, new QTableWidgetItem(order.clientName));
     m_table->setItem(row, 2, new QTableWidgetItem(order.device));
     m_table->setItem(row, 3, new QTableWidgetItem(order.issue));
-    m_table->setItem(row, 4, new QTableWidgetItem(order.status));
+    m_table->setItem(row, 4, new QTableWidgetItem(statusToString(order.status)));
     m_table->setItem(row, 5, new QTableWidgetItem(order.createdAt.toString("dd.MM.yyyy HH:mm")));
   }
 }
@@ -63,7 +63,7 @@ void MainWindow::onAddOrderClicked() {
       dialog.getClientName(),
       dialog.getDevice(),
       dialog.getIssue(),
-      "Нове"
+      OrderStatus::Created
     );
     loadOrders();
   }

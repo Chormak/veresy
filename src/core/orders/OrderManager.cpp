@@ -10,7 +10,7 @@
 
 #include "OrderManager.h"
 
-bool OrderManager::createOrder(const QString& clientName, const QString& device, const QString& issue, const QString& status) {
+bool OrderManager::createOrder(const QString& clientName, const QString& device, const QString& issue, OrderStatus status) {
   QSqlQuery query;
   query.prepare("INSERT INTO orders (client_name, device, issue, status) "
                 "VALUES (:name, :device, :issue, :status)");
@@ -18,13 +18,17 @@ bool OrderManager::createOrder(const QString& clientName, const QString& device,
   query.bindValue(":name", clientName);
   query.bindValue(":device", device);
   query.bindValue(":issue", issue);
-  query.bindValue(":status", status);
+  query.bindValue(":status", statusToString(status));
+  return query.exec();
+}
 
-  if (!query.exec()) {
-    qDebug() << "Помилка додавання замовлення:" << query.lastError().text();
-    return false;
-  }
-  return true;
+inline OrderStatus stringToStatus(const QString& statusStr) {
+  if (statusStr == "Created") return OrderStatus::Created;
+  if (statusStr == "In Progress") return OrderStatus::InProgress;
+  if (statusStr == "Waiting Parts") return OrderStatus::WaitingParts;
+  if (statusStr == "Done") return OrderStatus::Done;
+  if (statusStr == "Cancelled") return OrderStatus::Cancelled;
+  return OrderStatus::Created;
 }
 
 std::vector<Order> OrderManager::getAllOrders() {
@@ -37,7 +41,7 @@ std::vector<Order> OrderManager::getAllOrders() {
     order.clientName = query.value(1).toString();
     order.device = query.value(2).toString();
     order.issue = query.value(3).toString();
-    order.status = query.value(4).toString();
+    order.status = stringToStatus(query.value(4).toString()); 
     order.createdAt = query.value(5).toDateTime();
 
     orders.push_back(order);

@@ -13,12 +13,31 @@
 #include <QString>
 #include <QDateTime>
 
+enum class OrderStatus {
+  Created,
+  InProgress,
+  WaitingParts,
+  Done,
+  Cancelled
+};
+
+inline QString statusToString(OrderStatus status) {
+  switch (status) {
+    case OrderStatus::Created: return "Created";
+    case OrderStatus::InProgress: return "In Progress";
+    case OrderStatus::WaitingParts: return "Waiting Parts";
+    case OrderStatus::Done: return "Done";
+    case OrderStatus::Cancelled: return "Cancelled";
+    default: return "Unknown";
+  }
+}
+
 struct Order {
   int id;
   QString clientName;
   QString device;
   QString issue;
-  QString status;
+  OrderStatus status;
   QDateTime createdAt;
 };
 

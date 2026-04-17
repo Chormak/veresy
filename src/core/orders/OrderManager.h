@@ -21,7 +21,7 @@ class OrderManager {
 public:
   OrderManager() = default;
 
-  bool createOrder(const QString& clientName, const QString& device, const QString& issue, const QString& status);
+  bool createOrder(const QString& clientName, const QString& device, const QString& issue, OrderStatus status);
 
   std::vector<Order> getAllOrders();
 };
