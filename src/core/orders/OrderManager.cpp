@@ -10,41 +10,17 @@
 
 #include "OrderManager.h"
 
-bool OrderManager::createOrder(const QString& clientName, const QString& device, const QString& issue, OrderStatus status) {
-  QSqlQuery query;
-  query.prepare("INSERT INTO orders (client_name, device, issue, status) "
-                "VALUES (:name, :device, :issue, :status)");
-
-  query.bindValue(":name", clientName);
-  query.bindValue(":device", device);
-  query.bindValue(":issue", issue);
-  query.bindValue(":status", statusToString(status));
-  return query.exec();
+OrderManager::OrderManager() {
+    m_repository = std::make_unique<OrderRepository>();
 }
 
-inline OrderStatus stringToStatus(const QString& statusStr) {
-  if (statusStr == "Created") return OrderStatus::Created;
-  if (statusStr == "In Progress") return OrderStatus::InProgress;
-  if (statusStr == "Waiting Parts") return OrderStatus::WaitingParts;
-  if (statusStr == "Done") return OrderStatus::Done;
-  if (statusStr == "Cancelled") return OrderStatus::Cancelled;
-  return OrderStatus::Created;
+bool OrderManager::createOrder(const QString& name, const QString& dev, const QString& iss, OrderStatus stat) {
+    Order order{0, name, dev, iss, stat, QDateTime::currentDateTime()};
+    return m_repository->insertOrder(order);
 }
+
+
 
 std::vector<Order> OrderManager::getAllOrders() {
-  std::vector<Order> orders;
-  QSqlQuery query("SELECT id, client_name, device, issue, status, created_at FROM orders");
-
-  while (query.next()) {
-    Order order;
-    order.id = query.value(0).toInt();
-    order.clientName = query.value(1).toString();
-    order.device = query.value(2).toString();
-    order.issue = query.value(3).toString();
-    order.status = stringToStatus(query.value(4).toString()); 
-    order.createdAt = query.value(5).toDateTime();
-
-    orders.push_back(order);
-  }
-  return orders;
+    return m_repository->selectAllOrders();
 }

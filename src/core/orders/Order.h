@@ -32,6 +32,15 @@ inline QString statusToString(OrderStatus status) {
   }
 }
 
+inline OrderStatus stringToStatus(const QString& statusStr) {
+    if (statusStr == "Created")      return OrderStatus::Created;
+    if (statusStr == "In Progress")  return OrderStatus::InProgress;
+    if (statusStr == "Waiting Parts") return OrderStatus::WaitingParts;
+    if (statusStr == "Done")         return OrderStatus::Done;
+    if (statusStr == "Cancelled")    return OrderStatus::Cancelled;
+    return OrderStatus::Created;  // default
+}
+
 struct Order {
   int id;
   QString clientName;

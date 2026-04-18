@@ -8,26 +8,23 @@
 * http://www.apache.org/licenses/LICENSE-2.0
 */
 
-#ifndef ORDERMANAGER_H
-#define ORDERMANAGER_H
+
+#ifndef ORDERREPOSITORY_H
+#define ORDERREPOSITORY_H
 
 #include <vector>
-#include "Order.h"
+#include "../../core/orders/Order.h"
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QDebug>
 
-#include "../../data/repositories/OrderRepository.h"
-
-class OrderManager {
+class OrderRepository {
 public:
-  OrderManager();
+    OrderRepository() = default;
 
-  bool createOrder(const QString& name, const QString& dev, const QString& iss, OrderStatus stat);
-  std::vector<Order> getAllOrders();
-
-private:
-  std::unique_ptr<OrderRepository> m_repository;
+    // Тільки робота з БД
+    bool insertOrder(const Order& order);
+    std::vector<Order> selectAllOrders();    
 };
 
 #endif
