@@ -34,6 +34,7 @@ private:
 
 private slots:
   void onAddOrderClicked();
+  void onStatusChanged(int orderId, const QString& newStatusText);
 };
 
 #endif

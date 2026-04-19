@@ -19,6 +19,9 @@ bool OrderManager::createOrder(const QString& name, const QString& dev, const QS
     return m_repository->insertOrder(order);
 }
 
+bool OrderManager::changeStatus(int id, OrderStatus status) {
+    return m_repository->updateStatus(id, status);
+}
 
 
 std::vector<Order> OrderManager::getAllOrders() {

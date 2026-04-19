@@ -24,6 +24,14 @@ bool OrderRepository::insertOrder(const Order& order) {
     return query.exec();
 }
 
+bool OrderRepository::updateStatus(int id, OrderStatus status) {
+    QSqlQuery query;
+    query.prepare("UPDATE orders SET status = :status WHERE id = :id");
+    query.bindValue(":status", statusToString(status));
+    query.bindValue(":id", id);
+    return query.exec();
+}
+
 std::vector<Order> OrderRepository::selectAllOrders() {
     std::vector<Order> orders;
     QSqlQuery query("SELECT id, client_name, device, issue, status, created_at FROM orders");

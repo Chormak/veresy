@@ -22,8 +22,9 @@ class OrderRepository {
 public:
     OrderRepository() = default;
 
-    // Тільки робота з БД
+    // Тільки робота з БД і не більше!
     bool insertOrder(const Order& order);
+    bool updateStatus(int id, OrderStatus status);
     std::vector<Order> selectAllOrders();    
 };
 

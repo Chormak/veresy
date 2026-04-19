@@ -10,6 +10,9 @@
 
 #include "MainWindow.h"
 #include <QHeaderView>
+#include <QComboBox>
+#include <QPushButton>
+#include "../core/orders/Order.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
   setWindowTitle("veresy");
@@ -24,7 +27,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 void MainWindow::setupUi() {
   auto *centralWidget = new QWidget(this);
   auto *layout = new QVBoxLayout(centralWidget);
-  
+
+
   auto *btnAdd = new QPushButton("Створити замовлення", this);
   layout->addWidget(btnAdd);
   connect(btnAdd, &QPushButton::clicked, this, &MainWindow::onAddOrderClicked);
@@ -51,8 +55,27 @@ void MainWindow::loadOrders() {
     m_table->setItem(row, 1, new QTableWidgetItem(order.clientName));
     m_table->setItem(row, 2, new QTableWidgetItem(order.device));
     m_table->setItem(row, 3, new QTableWidgetItem(order.issue));
-    m_table->setItem(row, 4, new QTableWidgetItem(statusToString(order.status)));
+
+    QComboBox* combo = new QComboBox();
+    combo->addItems({"Created", "In Progress", "Waiting Parts", "Done", "Cancelled"});
+    combo->setCurrentText(statusToString(order.status));
+    combo->setProperty("orderId", order.id);
+    connect(combo, &QComboBox::currentTextChanged,
+            this, [this, combo](const QString& newStatusText) {
+              int id = combo->property("orderId").toInt();
+              this->onStatusChanged(id, newStatusText);
+            });
+    m_table->setCellWidget(row, 4, combo);
     m_table->setItem(row, 5, new QTableWidgetItem(order.createdAt.toString("dd.MM.yyyy HH:mm")));
+  }
+}
+
+void MainWindow::onStatusChanged(int orderId, const QString& newStatusText) {
+  OrderStatus newStatus = stringToStatus(newStatusText);
+  if (m_orderManager->changeStatus(orderId, newStatus)) {
+    qDebug() << "Статус змінено → Замовлення" << orderId << "→" << newStatusText;
+  } else {
+    qWarning() << "Помилка зміни статусу для замовлення" << orderId;
   }
 }
 
@@ -67,6 +90,6 @@ void MainWindow::onAddOrderClicked() {
     );
     loadOrders();
   }
-} 
+}
 
 MainWindow::~MainWindow() {}
