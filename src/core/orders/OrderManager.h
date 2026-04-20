@@ -26,6 +26,7 @@ public:
   bool createOrder(const QString& name, const QString& dev, const QString& iss, OrderStatus stat);
   bool changeStatus(int id, OrderStatus status);
   std::vector<Order> getAllOrders();
+  bool deleteOrder(int id);
 
 private:
   std::unique_ptr<OrderRepository> m_repository;

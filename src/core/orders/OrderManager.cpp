@@ -23,6 +23,9 @@ bool OrderManager::changeStatus(int id, OrderStatus status) {
     return m_repository->updateStatus(id, status);
 }
 
+bool OrderManager::deleteOrder(int id) {
+    return m_repository->deleteOrder(id);
+}
 
 std::vector<Order> OrderManager::getAllOrders() {
     return m_repository->selectAllOrders();

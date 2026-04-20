@@ -32,6 +32,18 @@ bool OrderRepository::updateStatus(int id, OrderStatus status) {
     return query.exec();
 }
 
+bool OrderRepository::deleteOrder(int id) {
+    if (id <= 0)
+        return false;
+    QSqlQuery query;
+    query.prepare("DELETE FROM orders WHERE id = :id");
+    query.bindValue(":id", id);
+    if (query.exec())
+        return true;
+    qWarning() << "Не вдалося видалити замовлення:" << query.lastError().text();
+    return false;
+}
+
 std::vector<Order> OrderRepository::selectAllOrders() {
     std::vector<Order> orders;
     QSqlQuery query("SELECT id, client_name, device, issue, status, created_at FROM orders");

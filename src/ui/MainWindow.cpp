@@ -13,6 +13,7 @@
 #include <QComboBox>
 #include <QPushButton>
 #include "../core/orders/Order.h"
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
   setWindowTitle("veresy");
@@ -34,8 +35,8 @@ void MainWindow::setupUi() {
   connect(btnAdd, &QPushButton::clicked, this, &MainWindow::onAddOrderClicked);
 
   m_table = new QTableWidget(this);
-  m_table->setColumnCount(6);
-  m_table->setHorizontalHeaderLabels({"ID", "Клієнт", "Пристрій", "Проблема", "Статус", "Дата"});
+  m_table->setColumnCount(7);
+  m_table->setHorizontalHeaderLabels({"ID", "Клієнт", "Пристрій", "Проблема", "Статус", "Дата", "Дія"});
 
   m_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
@@ -67,6 +68,11 @@ void MainWindow::loadOrders() {
             });
     m_table->setCellWidget(row, 4, combo);
     m_table->setItem(row, 5, new QTableWidgetItem(order.createdAt.toString("dd.MM.yyyy HH:mm")));
+
+    QPushButton* btnDelete = new QPushButton("Видалити", this);
+    btnDelete->setProperty("orderID", order.id);
+    connect(btnDelete, &QPushButton::clicked, this, &MainWindow::onDeleteOrderClicked);
+    m_table->setCellWidget(row, 6, btnDelete);
   }
 }
 
@@ -89,6 +95,20 @@ void MainWindow::onAddOrderClicked() {
       OrderStatus::Created
     );
     loadOrders();
+  }
+}
+
+void MainWindow::onDeleteOrderClicked() {
+  QPushButton* btn = qobject_cast<QPushButton*>(sender());
+  if (!btn) return;
+  int id = btn->property("orderID").toInt();
+  QMessageBox::StandardButton res = QMessageBox::question(this, "Видалення",
+                                                          "Ви впевнені, що хочете видалити замовдення №" + QString::number(id) + "?",
+                                                          QMessageBox::Yes | QMessageBox::No);
+  if (res == QMessageBox::Yes) {
+    if (m_orderManager->deleteOrder(id)) {
+      loadOrders();
+    }
   }
 }
 

@@ -25,6 +25,7 @@ public:
     // Тільки робота з БД і не більше!
     bool insertOrder(const Order& order);
     bool updateStatus(int id, OrderStatus status);
+    bool deleteOrder(int id);
     std::vector<Order> selectAllOrders();    
 };
 
