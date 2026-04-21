@@ -27,7 +27,7 @@ public:
 
 private:
   void setupUi();
-  void loadOrders();
+  void reloadOrders();
 
   QTableWidget *m_table;
   std::unique_ptr<OrderManager> m_orderManager;

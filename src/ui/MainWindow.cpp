@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
   m_orderManager = std::make_unique<OrderManager>();
 
   setupUi();
-  loadOrders();
+  reloadOrders();
 }
 
 void MainWindow::setupUi() {
@@ -44,7 +44,7 @@ void MainWindow::setupUi() {
   setCentralWidget(centralWidget);
 }
 
-void MainWindow::loadOrders() {
+void MainWindow::reloadOrders() {
   auto orders = m_orderManager->getAllOrders();
   m_table->setRowCount(0);
 
@@ -80,6 +80,7 @@ void MainWindow::onStatusChanged(int orderId, const QString& newStatusText) {
   OrderStatus newStatus = stringToStatus(newStatusText);
   if (m_orderManager->changeStatus(orderId, newStatus)) {
     qDebug() << "Статус змінено → Замовлення" << orderId << "→" << newStatusText;
+    reloadOrders();
   } else {
     qWarning() << "Помилка зміни статусу для замовлення" << orderId;
   }
@@ -94,7 +95,7 @@ void MainWindow::onAddOrderClicked() {
       dialog.getIssue(),
       OrderStatus::Created
     );
-    loadOrders();
+    reloadOrders();
   }
 }
 
@@ -107,7 +108,7 @@ void MainWindow::onDeleteOrderClicked() {
                                                           QMessageBox::Yes | QMessageBox::No);
   if (res == QMessageBox::Yes) {
     if (m_orderManager->deleteOrder(id)) {
-      loadOrders();
+      reloadOrders();
     }
   }
 }
