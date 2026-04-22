@@ -17,7 +17,7 @@
 #include <memory>
 #include "../core/orders/OrderManager.h"
 #include "OrderDialog.h"
-
+#include <QLineEdit>
 class MainWindow : public QMainWindow {
   Q_OBJECT
 
@@ -27,15 +27,17 @@ public:
 
 private:
   void setupUi();
-  void reloadOrders();
+  void reloadOrders(const QString &filter = "");
 
   QTableWidget *m_table;
   std::unique_ptr<OrderManager> m_orderManager;
+  QLineEdit *m_searchEdit;
 
 private slots:
   void onAddOrderClicked();
   void onStatusChanged(int orderId, const QString& newStatusText);
   void onDeleteOrderClicked();
+  void onSearchTextChanged(const QString &text);
 };
 
 #endif

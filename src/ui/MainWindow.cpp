@@ -29,6 +29,10 @@ void MainWindow::setupUi() {
   auto *centralWidget = new QWidget(this);
   auto *layout = new QVBoxLayout(centralWidget);
 
+  m_searchEdit = new QLineEdit(this);
+  m_searchEdit->setPlaceholderText("Пошук за клієнтом або пристроєм...");
+  layout->addWidget(m_searchEdit);
+  connect(m_searchEdit, &QLineEdit::textChanged, this, &MainWindow::onSearchTextChanged);
 
   auto *btnAdd = new QPushButton("Створити замовлення", this);
   layout->addWidget(btnAdd);
@@ -44,11 +48,20 @@ void MainWindow::setupUi() {
   setCentralWidget(centralWidget);
 }
 
-void MainWindow::reloadOrders() {
+void MainWindow::reloadOrders(const QString &filter) {
   auto orders = m_orderManager->getAllOrders();
   m_table->setRowCount(0);
 
   for (const auto& order : orders) {
+
+    if (!filter.isEmpty()) {
+      bool matchesClient = order.clientName.contains(filter, Qt::CaseInsensitive);
+      bool matchesDevice = order.device.contains(filter, Qt::CaseInsensitive);
+      if (!matchesClient && !matchesDevice) {
+        continue;
+      }
+    }
+
     int row = m_table->rowCount();
     m_table->insertRow(row);
 
@@ -111,6 +124,10 @@ void MainWindow::onDeleteOrderClicked() {
       reloadOrders();
     }
   }
+}
+
+void MainWindow::onSearchTextChanged(const QString &text) {
+  reloadOrders(text);
 }
 
 MainWindow::~MainWindow() {}
