@@ -102,13 +102,18 @@ void MainWindow::onStatusChanged(int orderId, const QString& newStatusText) {
 void MainWindow::onAddOrderClicked() {
   OrderDialog dialog(this);
   if (dialog.exec() == QDialog::Accepted) {
-    m_orderManager->createOrder(
+    bool success = m_orderManager->createOrder(
       dialog.getClientName(),
       dialog.getDevice(),
       dialog.getIssue(),
       OrderStatus::Created
     );
-    reloadOrders();
+    if (success) {
+      reloadOrders();
+      QMessageBox::information(this, "Успіх", "Замовлення успішно додано!");
+    } else {
+      QMessageBox::information(this, "Помидка", "Не вдалося зберегти замовлення в базі даних.");
+    }
   }
 }
 
