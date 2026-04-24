@@ -72,12 +72,12 @@ void MainWindow::reloadOrders(const QString &filter) {
 
     QComboBox* combo = new QComboBox();
     combo->addItems({"Created", "In Progress", "Waiting Parts", "Done", "Cancelled"});
-    combo->setCurrentText(statusToString(order.status));
+    combo->setCurrentIndex(static_cast<int>(order.status));
     combo->setProperty("orderId", order.id);
-    connect(combo, &QComboBox::currentTextChanged,
-            this, [this, combo](const QString& newStatusText) {
-              int id = combo->property("orderId").toInt();
-              this->onStatusChanged(id, newStatusText);
+    connect(combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, [this, combo](int index) {
+            int id = combo->property("orderId").toInt();
+            this->m_orderManager->changeStatus(id, static_cast<OrderStatus>(index));
             });
     m_table->setCellWidget(row, 4, combo);
     m_table->setItem(row, 5, new QTableWidgetItem(order.createdAt.toString("dd.MM.yyyy HH:mm")));

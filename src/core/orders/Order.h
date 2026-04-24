@@ -14,11 +14,11 @@
 #include <QDateTime>
 
 enum class OrderStatus {
-  Created,
-  InProgress,
-  WaitingParts,
-  Done,
-  Cancelled
+  Created = 0,
+  InProgress = 1,
+  WaitingParts = 2,
+  Done = 3,
+  Cancelled = 4
 };
 
 inline QString statusToString(OrderStatus status) {

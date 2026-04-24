@@ -19,7 +19,7 @@ bool OrderRepository::insertOrder(const Order& order) {
     query.bindValue(":name", order.clientName);
     query.bindValue(":device", order.device);
     query.bindValue(":issue", order.issue);
-    query.bindValue(":status", statusToString(order.status));
+    query.bindValue(":status", static_cast<int>(order.status));
 
     return query.exec();
 }
@@ -27,7 +27,7 @@ bool OrderRepository::insertOrder(const Order& order) {
 bool OrderRepository::updateStatus(int id, OrderStatus status) {
     QSqlQuery query;
     query.prepare("UPDATE orders SET status = :status WHERE id = :id");
-    query.bindValue(":status", statusToString(status));
+    query.bindValue(":status", static_cast<int>(status));
     query.bindValue(":id", id);
     return query.exec();
 }
@@ -54,7 +54,7 @@ std::vector<Order> OrderRepository::selectAllOrders() {
         order.clientName = query.value(1).toString();
         order.device = query.value(2).toString();
         order.issue = query.value(3).toString();
-        order.status = stringToStatus(query.value(4).toString());
+        order.status = static_cast<OrderStatus>(query.value(4).toInt());
         order.createdAt = query.value(5).toDateTime();
         orders.push_back(order);
     }
