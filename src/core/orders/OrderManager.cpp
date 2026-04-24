@@ -27,6 +27,10 @@ bool OrderManager::deleteOrder(int id) {
     return m_repository->deleteOrder(id);
 }
 
+bool OrderManager::addOrder(const QString& name, const QString& dev, const QString& iss) {
+    return createOrder(name, dev, iss, OrderStatus::Created);
+}
+
 std::vector<Order> OrderManager::getAllOrders() {
     return m_repository->selectAllOrders();
 }
