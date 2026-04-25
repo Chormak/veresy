@@ -38,54 +38,53 @@ void MainWindow::setupUi() {
   layout->addWidget(btnAdd);
   connect(btnAdd, &QPushButton::clicked, this, &MainWindow::onAddOrderClicked);
 
-  m_table = new QTableWidget(this);
-  m_table->setColumnCount(7);
-  m_table->setHorizontalHeaderLabels({"ID", "Клієнт", "Пристрій", "Проблема", "Статус", "Дата", "Дія"});
+  m_view = new QTableView(this);
+  m_model = new OrderTableModel(this);
+  m_view->setModel(m_model);
+  
+  m_view->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+  m_view->setSelectionBehavior(QAbstractItemView::SelectRows);
 
-  m_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
-  layout->addWidget(m_table);
+  layout->addWidget(m_view);
   setCentralWidget(centralWidget);
 }
 
 void MainWindow::reloadOrders(const QString &filter) {
-  auto orders = m_orderManager->getAllOrders();
-  m_table->setRowCount(0);
+  auto allOrders = m_orderManager->getAllOrders();
+  std::vector<Order> filteredOrders;
 
-  for (const auto& order : orders) {
-
-    if (!filter.isEmpty()) {
-      bool matchesClient = order.clientName.contains(filter, Qt::CaseInsensitive);
-      bool matchesDevice = order.device.contains(filter, Qt::CaseInsensitive);
-      if (!matchesClient && !matchesDevice) {
-        continue;
-      }
+  for (const auto& order : allOrders) {
+    if (filter.isEmpty() ||
+    order.clientName.contains(filter, Qt::CaseInsensitive) ||
+    order.device.contains(filter, Qt::CaseInsensitive)) {
+    filteredOrders.push_back(order);
     }
+  }
 
-    int row = m_table->rowCount();
-    m_table->insertRow(row);
+  m_model->setOrders(filteredOrders);
 
-    m_table->setItem(row, 0, new QTableWidgetItem(QString::number(order.id)));
-    m_table->setItem(row, 1, new QTableWidgetItem(order.clientName));
-    m_table->setItem(row, 2, new QTableWidgetItem(order.device));
-    m_table->setItem(row, 3, new QTableWidgetItem(order.issue));
+  for (int i = 0; i < filteredOrders.size(); ++i) {
+    const auto& order = filteredOrders[i];
 
     QComboBox* combo = new QComboBox();
     combo->addItems({"Created", "In Progress", "Waiting Parts", "Done", "Cancelled"});
     combo->setCurrentIndex(static_cast<int>(order.status));
     combo->setProperty("orderId", order.id);
+
     connect(combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, [this, combo](int index) {
             int id = combo->property("orderId").toInt();
             this->m_orderManager->changeStatus(id, static_cast<OrderStatus>(index));
             });
-    m_table->setCellWidget(row, 4, combo);
-    m_table->setItem(row, 5, new QTableWidgetItem(order.createdAt.toString("dd.MM.yyyy HH:mm")));
 
-    QPushButton* btnDelete = new QPushButton("Видалити", this);
-    btnDelete->setProperty("orderID", order.id);
+    m_view->setIndexWidget(m_model->index(i, 4), combo);
+
+    QPushButton* btnDelete = new QPushButton("Видвлити", this);
+    btnDelete->setProperty("orderId", order.id);
+
     connect(btnDelete, &QPushButton::clicked, this, &MainWindow::onDeleteOrderClicked);
-    m_table->setCellWidget(row, 6, btnDelete);
+
+    m_view->setIndexWidget(m_model->index(i, 6), btnDelete);
   }
 }
 
@@ -114,7 +113,7 @@ void MainWindow::onAddOrderClicked() {
 void MainWindow::onDeleteOrderClicked() {
   QPushButton* btn = qobject_cast<QPushButton*>(sender());
   if (!btn) return;
-  int id = btn->property("orderID").toInt();
+  int id = btn->property("orderId").toInt();
   QMessageBox::StandardButton res = QMessageBox::question(this, "Видалення",
                                                           "Ви впевнені, що хочете видалити замовдення №" + QString::number(id) + "?",
                                                           QMessageBox::Yes | QMessageBox::No);

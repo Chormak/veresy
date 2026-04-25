@@ -12,12 +12,13 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QTableWidget>
+#include <QTableView>
 #include <QVBoxLayout>
 #include <memory>
 #include "../core/orders/OrderManager.h"
 #include "OrderDialog.h"
 #include <QLineEdit>
+#include "OrderTableModel.h"
 class MainWindow : public QMainWindow {
   Q_OBJECT
 
@@ -29,9 +30,10 @@ private:
   void setupUi();
   void reloadOrders(const QString &filter = "");
 
-  QTableWidget *m_table;
   std::unique_ptr<OrderManager> m_orderManager;
   QLineEdit *m_searchEdit;
+  QTableView *m_view;
+  OrderTableModel *m_model;
 
 private slots:
   void onAddOrderClicked();

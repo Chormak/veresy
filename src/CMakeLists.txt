@@ -20,6 +20,8 @@ ui/OrderDialog.h
 ui/OrderDialog.cpp
 data/repositories/OrderRepository.cpp
 data/repositories/OrderRepository.h
+ui/OrderTableModel.h
+ui/OrderTableModel.cpp
 )
 
 target_link_libraries(veresy PRIVATE Qt6::Widgets Qt6::Sql)
