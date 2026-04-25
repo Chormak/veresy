@@ -14,8 +14,8 @@ OrderManager::OrderManager() {
     m_repository = std::make_unique<OrderRepository>();
 }
 
-bool OrderManager::createOrder(const QString& name, const QString& dev, const QString& iss, OrderStatus stat) {
-    Order order{0, name, dev, iss, stat, QDateTime::currentDateTime()};
+bool OrderManager::createOrder(const QString& name, const QString& dev, const QString& issue, OrderStatus stat) {
+    Order order{0, name, dev, issue, stat, QDateTime::currentDateTime()};
     return m_repository->insertOrder(order);
 }
 
@@ -27,8 +27,17 @@ bool OrderManager::deleteOrder(int id) {
     return m_repository->deleteOrder(id);
 }
 
-bool OrderManager::addOrder(const QString& name, const QString& dev, const QString& iss) {
-    return createOrder(name, dev, iss, OrderStatus::Created);
+bool OrderManager::addOrder(const QString& name, const QString& device, const QString& issue) {
+    if (name.trimmed().isEmpty()) {
+        qWarning() << "Валідація провалена: Ім'я клієнта порожнє";
+        return false;
+    }
+    if (device.trimmed().isEmpty()) {
+        qWarning() << "Валідація провалена: Пристрій не вказано";
+        return false;
+    }
+    QString finalIssue = issue.trimmed().isEmpty() ? "Діагностика" : issue;
+    return createOrder(name, device, finalIssue, OrderStatus::Created);
 }
 
 std::vector<Order> OrderManager::getAllOrders() {

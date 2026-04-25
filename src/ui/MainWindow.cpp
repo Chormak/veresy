@@ -105,7 +105,7 @@ void MainWindow::onAddOrderClicked() {
       reloadOrders();
       QMessageBox::information(this, "Успіх", "Замовлення успішно додано!");
     } else {
-      QMessageBox::information(this, "Помидка", "Не вдалося зберегти замовлення в базі даних.");
+      QMessageBox::warning(this, "Поммилка валідації", "Будь ласка, заповніть обов'язкові поля (Клієнт та Пристрій).");
     }
   }
 }
