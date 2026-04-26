@@ -57,7 +57,8 @@ bool OrderRepository::deleteOrder(int id) {
 
 std::vector<Order> OrderRepository::selectAllOrders() {
     std::vector<Order> orders;
-    QSqlQuery query("SELECT id, client_name, device, issue, status, created_at FROM orders");
+    QSqlQuery query("SELECT id, client_name, device, issue, status, created_at "
+                    "FROM orders ORDER BY created_at DESC");
 
     while (query.next()) {
         Order order;
