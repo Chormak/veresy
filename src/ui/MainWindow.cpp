@@ -90,11 +90,10 @@ void MainWindow::reloadOrders(const QString &filter) {
 
 void MainWindow::onStatusChanged(int orderId, const QString& newStatusText) {
   OrderStatus newStatus = stringToStatus(newStatusText);
-  if (m_orderManager->changeStatus(orderId, newStatus)) {
-    qDebug() << "Статус змінено → Замовлення" << orderId << "→" << newStatusText;
+  if (!m_orderManager->changeStatus(orderId, newStatus)) {
+    QMessageBox::critical(this, "Помилка бази даних",
+                          "Не вдалося оновити статус. Перевірте доступ до файлу бази.");
     reloadOrders();
-  } else {
-    qWarning() << "Помилка зміни статусу для замовлення" << orderId;
   }
 }
 
@@ -105,7 +104,7 @@ void MainWindow::onAddOrderClicked() {
       reloadOrders();
       QMessageBox::information(this, "Успіх", "Замовлення успішно додано!");
     } else {
-      QMessageBox::warning(this, "Поммилка валідації", "Будь ласка, заповніть обов'язкові поля (Клієнт та Пристрій).");
+      QMessageBox::warning(this, "Помилка валідації", "Будь ласка, заповніть обов'язкові поля (Клієнт та Пристрій).");
     }
   }
 }
@@ -118,9 +117,11 @@ void MainWindow::onDeleteOrderClicked() {
                                                           "Ви впевнені, що хочете видалити замовдення №" + QString::number(id) + "?",
                                                           QMessageBox::Yes | QMessageBox::No);
   if (res == QMessageBox::Yes) {
-    if (m_orderManager->deleteOrder(id)) {
-      reloadOrders();
+    if (!m_orderManager->deleteOrder(id)) {
+      QMessageBox::critical(this, "Помилка видалення",
+                            "База даних відхилила запит на видалення.");
     }
+    reloadOrders();
   }
 }
 

@@ -21,7 +21,11 @@ bool OrderRepository::insertOrder(const Order& order) {
     query.bindValue(":issue", order.issue);
     query.bindValue(":status", static_cast<int>(order.status));
 
-    return query.exec();
+    if (!query.exec()) {
+        qCritical() << "SQL Error (insert):" << query.lastError().text();
+        return false;
+    }
+    return true;
 }
 
 bool OrderRepository::updateStatus(int id, OrderStatus status) {
@@ -29,7 +33,12 @@ bool OrderRepository::updateStatus(int id, OrderStatus status) {
     query.prepare("UPDATE orders SET status = :status WHERE id = :id");
     query.bindValue(":status", static_cast<int>(status));
     query.bindValue(":id", id);
-    return query.exec();
+    
+    if (!query.exec()) {
+        qCritical() << "SQL Error (update):" << query.lastError().text();
+        return false;
+    }
+    return true;
 }
 
 bool OrderRepository::deleteOrder(int id) {
@@ -38,10 +47,12 @@ bool OrderRepository::deleteOrder(int id) {
     QSqlQuery query;
     query.prepare("DELETE FROM orders WHERE id = :id");
     query.bindValue(":id", id);
-    if (query.exec())
-        return true;
-    qWarning() << "Не вдалося видалити замовлення:" << query.lastError().text();
-    return false;
+
+    if (!query.exec()) {
+        qCritical() << "SQL Error (delete):" << query.lastError().text();
+        return false;
+    }
+    return true;
 }
 
 std::vector<Order> OrderRepository::selectAllOrders() {
