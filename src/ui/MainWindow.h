@@ -12,6 +12,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "OrderTableView.h"
 #include <QTableView>
 #include <QVBoxLayout>
 #include <memory>
@@ -19,6 +20,8 @@
 #include "OrderDialog.h"
 #include <QLineEdit>
 #include "OrderTableModel.h"
+
+
 class MainWindow : public QMainWindow {
   Q_OBJECT
 
@@ -32,13 +35,12 @@ private:
 
   std::unique_ptr<OrderManager> m_orderManager;
   QLineEdit *m_searchEdit;
-  QTableView *m_view;
+  OrderTableView *m_view;
   OrderTableModel *m_model;
 
 private slots:
   void onAddOrderClicked();
-  void onStatusChanged(int orderId, const QString& newStatusText);
-  void onDeleteOrderClicked();
+  void onDeleteOrderClicked(int id);
   void onSearchTextChanged(const QString &text);
 };
 

@@ -10,7 +10,6 @@
 
 #include "MainWindow.h"
 #include <QHeaderView>
-#include <QComboBox>
 #include <QPushButton>
 #include "../core/orders/Order.h"
 #include <QMessageBox>
@@ -38,15 +37,17 @@ void MainWindow::setupUi() {
   layout->addWidget(btnAdd);
   connect(btnAdd, &QPushButton::clicked, this, &MainWindow::onAddOrderClicked);
 
-  m_view = new QTableView(this);
-  m_model = new OrderTableModel(this);
-  m_view->setModel(m_model);
-  
-  m_view->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-  m_view->setSelectionBehavior(QAbstractItemView::SelectRows);
-
+  m_view = new OrderTableView(this);
   layout->addWidget(m_view);
   setCentralWidget(centralWidget);
+
+  connect(m_view, &OrderTableView::statusChanged, this, [this](int id, int index){
+    if (!m_orderManager->changeStatus(id, static_cast<OrderStatus>(index))) {
+      QMessageBox::critical(this, "Помидка", "Не вдалося оновити статус.");
+      reloadOrders();
+    }
+  });
+  connect(m_view, &OrderTableView::deleteRequested, this, &MainWindow::onDeleteOrderClicked);
 }
 
 void MainWindow::reloadOrders(const QString &filter) {
@@ -61,40 +62,7 @@ void MainWindow::reloadOrders(const QString &filter) {
     }
   }
 
-  m_model->setOrders(filteredOrders);
-
-  for (int i = 0; i < filteredOrders.size(); ++i) {
-    const auto& order = filteredOrders[i];
-
-    QComboBox* combo = new QComboBox();
-    combo->addItems({"Created", "In Progress", "Waiting Parts", "Done", "Cancelled"});
-    combo->setCurrentIndex(static_cast<int>(order.status));
-    combo->setProperty("orderId", order.id);
-
-    connect(combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this, [this, combo](int index) {
-            int id = combo->property("orderId").toInt();
-            this->m_orderManager->changeStatus(id, static_cast<OrderStatus>(index));
-            });
-
-    m_view->setIndexWidget(m_model->index(i, 4), combo);
-
-    QPushButton* btnDelete = new QPushButton("Видвлити", this);
-    btnDelete->setProperty("orderId", order.id);
-
-    connect(btnDelete, &QPushButton::clicked, this, &MainWindow::onDeleteOrderClicked);
-
-    m_view->setIndexWidget(m_model->index(i, 6), btnDelete);
-  }
-}
-
-void MainWindow::onStatusChanged(int orderId, const QString& newStatusText) {
-  OrderStatus newStatus = stringToStatus(newStatusText);
-  if (!m_orderManager->changeStatus(orderId, newStatus)) {
-    QMessageBox::critical(this, "Помилка бази даних",
-                          "Не вдалося оновити статус. Перевірте доступ до файлу бази.");
-    reloadOrders();
-  }
+  m_view->updateData(filteredOrders);
 }
 
 void MainWindow::onAddOrderClicked() {
@@ -109,10 +77,7 @@ void MainWindow::onAddOrderClicked() {
   }
 }
 
-void MainWindow::onDeleteOrderClicked() {
-  QPushButton* btn = qobject_cast<QPushButton*>(sender());
-  if (!btn) return;
-  int id = btn->property("orderId").toInt();
+void MainWindow::onDeleteOrderClicked(int id) {
   QMessageBox::StandardButton res = QMessageBox::question(this, "Видалення",
                                                           "Ви впевнені, що хочете видалити замовдення №" + QString::number(id) + "?",
                                                           QMessageBox::Yes | QMessageBox::No);
