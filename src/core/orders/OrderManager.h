@@ -28,7 +28,8 @@ public:
   bool addOrder(const QString& name, const QString& dev, const QString& iss);
   bool changeStatus(int id, OrderStatus status);
   bool deleteOrder(int id);
-  std::vector<Order> getAllOrders();
+  void reloadFromRepository();
+  std::vector<Order> getOrders() const;
 
   signals:
   void orderCreated();

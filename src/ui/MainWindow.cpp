@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
   m_orderManager = std::make_unique<OrderManager>(this);
 
   setupUi();
-  reloadOrders();
+  m_orderManager->reloadFromRepository();
 }
 
 void MainWindow::setupUi() {
@@ -55,7 +55,7 @@ void MainWindow::setupUi() {
 }
 
 void MainWindow::reloadOrders(const QString &filter) {
-  auto allOrders = m_orderManager->getAllOrders();
+  auto allOrders = m_orderManager->getOrders();
   std::vector<Order> filteredOrders;
 
   for (const auto& order : allOrders) {

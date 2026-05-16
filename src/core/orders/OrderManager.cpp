@@ -13,6 +13,14 @@
 OrderManager::OrderManager(QObject *parent) : QObject(parent) {
     m_repository = std::make_unique<OrderRepository>();
 }
+void OrderManager::reloadFromRepository() {
+    m_orderCache = m_repository->selectAllOrders();
+
+    emit ordersReloaded();
+}
+std::vector<Order> OrderManager::getOrders() const {
+    return m_orderCache;
+}
 
 bool OrderManager::createOrder(const QString& name, const QString& dev, const QString& iss, OrderStatus stat) {
     Order order{0, name, dev, iss, stat, QDateTime::currentDateTime()};
@@ -23,7 +31,7 @@ bool OrderManager::changeStatus(int id, OrderStatus status) {
     bool success = m_repository->updateStatus(id, status);
     if (success) {
         emit orderUpdated();
-        emit ordersReloaded();
+        reloadFromRepository();
     }
     return success;
 }
@@ -32,7 +40,7 @@ bool OrderManager::deleteOrder(int id) {
     bool success = m_repository->deleteOrder(id);
     if (success) {
         emit orderDeleted();
-        emit ordersReloaded();
+        reloadFromRepository();
     }
     return success;
 }
@@ -44,11 +52,7 @@ bool OrderManager::addOrder(const QString& name, const QString& dev, const QStri
     bool success = createOrder(name, dev, finalIssue, OrderStatus::Created);
     if (success) {
         emit orderCreated();
-        emit ordersReloaded();
+        reloadFromRepository();
     }
     return success;
-}
-
-std::vector<Order> OrderManager::getAllOrders() {
-    return m_repository->selectAllOrders();
 }
