@@ -11,6 +11,7 @@
 #ifndef ORDERMANAGER_H
 #define ORDERMANAGER_H
 
+#include <QObject>
 #include <vector>
 #include "Order.h"
 #include <QSqlQuery>
@@ -19,16 +20,25 @@
 
 #include "../../data/repositories/OrderRepository.h"
 
-class OrderManager {
+class OrderManager : public QObject {
+  Q_OBJECT 
 public:
-  OrderManager();
+  explicit OrderManager(QObject *parent = nullptr);
+
+  bool addOrder(const QString& name, const QString& dev, const QString& iss);
   bool changeStatus(int id, OrderStatus status);
-  std::vector<Order> getAllOrders();
   bool deleteOrder(int id);
-  bool addOrder(const QString& name, const QString& device, const QString& issue);
+  std::vector<Order> getAllOrders();
+
+  signals:
+  void orderCreated();
+  void orderUpdated();
+  void orderDeleted();
+  void ordersReloaded();
 
 private:
-  bool createOrder(const QString& name, const QString& dev, const QString& issue, OrderStatus stat);
+  bool createOrder(const QString& name, const QString& dev, const QString& iss, OrderStatus stat);
+  std::vector<Order> m_orderCache;
   std::unique_ptr<OrderRepository> m_repository;
 };
 

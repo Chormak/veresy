@@ -10,34 +10,43 @@
 
 #include "OrderManager.h"
 
-OrderManager::OrderManager() {
+OrderManager::OrderManager(QObject *parent) : QObject(parent) {
     m_repository = std::make_unique<OrderRepository>();
 }
 
-bool OrderManager::createOrder(const QString& name, const QString& dev, const QString& issue, OrderStatus stat) {
-    Order order{0, name, dev, issue, stat, QDateTime::currentDateTime()};
+bool OrderManager::createOrder(const QString& name, const QString& dev, const QString& iss, OrderStatus stat) {
+    Order order{0, name, dev, iss, stat, QDateTime::currentDateTime()};
     return m_repository->insertOrder(order);
 }
 
 bool OrderManager::changeStatus(int id, OrderStatus status) {
-    return m_repository->updateStatus(id, status);
+    bool success = m_repository->updateStatus(id, status);
+    if (success) {
+        emit orderUpdated();
+        emit ordersReloaded();
+    }
+    return success;
 }
 
 bool OrderManager::deleteOrder(int id) {
-    return m_repository->deleteOrder(id);
+    bool success = m_repository->deleteOrder(id);
+    if (success) {
+        emit orderDeleted();
+        emit ordersReloaded();
+    }
+    return success;
 }
 
-bool OrderManager::addOrder(const QString& name, const QString& device, const QString& issue) {
-    if (name.trimmed().isEmpty()) {
-        qWarning() << "Валідація провалена: Ім'я клієнта порожнє";
-        return false;
+bool OrderManager::addOrder(const QString& name, const QString& dev, const QString& iss) {
+    if (name.trimmed().isEmpty() || dev.trimmed().isEmpty()) return false;
+    QString finalIssue = iss.trimmed().isEmpty() ? "Діагностика" : iss;
+
+    bool success = createOrder(name, dev, finalIssue, OrderStatus::Created);
+    if (success) {
+        emit orderCreated();
+        emit ordersReloaded();
     }
-    if (device.trimmed().isEmpty()) {
-        qWarning() << "Валідація провалена: Пристрій не вказано";
-        return false;
-    }
-    QString finalIssue = issue.trimmed().isEmpty() ? "Діагностика" : issue;
-    return createOrder(name, device, finalIssue, OrderStatus::Created);
+    return success;
 }
 
 std::vector<Order> OrderManager::getAllOrders() {

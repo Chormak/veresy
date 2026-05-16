@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
   setWindowTitle("veresy");
   resize(800, 600);
 
-  m_orderManager = std::make_unique<OrderManager>();
+  m_orderManager = std::make_unique<OrderManager>(this);
 
   setupUi();
   reloadOrders();
@@ -48,6 +48,10 @@ void MainWindow::setupUi() {
     }
   });
   connect(m_view, &OrderTableView::deleteRequested, this, &MainWindow::onDeleteOrderClicked);
+
+  connect(m_orderManager.get(), &OrderManager::ordersReloaded, this, [this]() {
+    this->reloadOrders(m_searchEdit->text());
+  });
 }
 
 void MainWindow::reloadOrders(const QString &filter) {
@@ -69,7 +73,6 @@ void MainWindow::onAddOrderClicked() {
   OrderDialog dialog(this);
   if (dialog.exec() == QDialog::Accepted) {
     if (m_orderManager->addOrder(dialog.getClientName(), dialog.getDevice(), dialog.getIssue())) {
-      reloadOrders();
       QMessageBox::information(this, "Успіх", "Замовлення успішно додано!");
     } else {
       QMessageBox::warning(this, "Помилка валідації", "Будь ласка, заповніть обов'язкові поля (Клієнт та Пристрій).");
@@ -86,7 +89,6 @@ void MainWindow::onDeleteOrderClicked(int id) {
       QMessageBox::critical(this, "Помилка видалення",
                             "База даних відхилила запит на видалення.");
     }
-    reloadOrders();
   }
 }
 
