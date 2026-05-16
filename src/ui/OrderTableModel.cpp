@@ -15,9 +15,9 @@ OrderTableModel::OrderTableModel(QObject *parent) : QAbstractTableModel(parent) 
 int OrderTableModel::rowCount(const QModelIndex &) const {return m_orders.size(); }
 int OrderTableModel::columnCount(const QModelIndex &) const {return 7; }
 
-void OrderTableModel::setOrders(const std::vector<Order>& order) {
+void OrderTableModel::setOrders(const std::vector<Order>& orders) {
   beginResetModel();
-  m_orders = order;
+  m_orders = orders;
   endResetModel();
 }
 
