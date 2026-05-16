@@ -38,7 +38,7 @@ inline OrderStatus stringToStatus(const QString& statusStr) {
     if (statusStr == "Waiting Parts") return OrderStatus::WaitingParts;
     if (statusStr == "Done")         return OrderStatus::Done;
     if (statusStr == "Cancelled")    return OrderStatus::Cancelled;
-    return OrderStatus::Created;  // default
+    return OrderStatus::Created;
 }
 
 struct Order {

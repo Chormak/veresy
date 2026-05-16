@@ -22,7 +22,6 @@ class OrderRepository {
 public:
     OrderRepository() = default;
 
-    // Тільки робота з БД і не більше!
     bool insertOrder(const Order& order);
     bool updateStatus(int id, OrderStatus status);
     bool deleteOrder(int id);
