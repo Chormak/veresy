@@ -9,6 +9,7 @@
 */
 
 #include "OrderManager.h"
+#include <QRegularExpression>
 
 OrderManager::OrderManager(QObject *parent) : QObject(parent) {
     m_repository = std::make_unique<OrderRepository>();
@@ -47,27 +48,46 @@ bool OrderManager::deleteOrder(int id) {
 }
 
 bool OrderManager::addOrder(const QString& name, const QString& dev, const QString& iss) {
-    if (name.trimmed().isEmpty() || dev.trimmed().isEmpty()) return false;
-    QString finalIssue = iss.trimmed().isEmpty() ? "Діагностика" : iss;
+    QString cleanName = sanitizeString(name);
+    QString cleanDevice = sanitizeString(dev);
+    QString cleanIssue = sanitizeString(iss);
 
-    bool success = createOrder(name, dev, finalIssue, OrderStatus::Created);
+    if (cleanName.isEmpty() || cleanDevice.isEmpty()) {
+        qWarning() << "Валідація провалена: порожні поля після санітизації";
+        return false;
+    } 
+    QString finalIssue = cleanIssue.isEmpty() ? "Діагностика" : cleanIssue;
+    
+    bool success = createOrder(cleanName, cleanDevice, finalIssue, OrderStatus::Created);
     if (success) {
         emit orderCreated();
         reloadFromRepository();
-    }
+    } 
+
     return success;
 }
 
 bool OrderManager::updateOrder(const Order& order) {
-    if (order.clientName.trimmed().isEmpty() || order.device.trimmed().isEmpty()) {
-        qWarning() << "Валідація провадена при редагуванні замовлення" << order.id;
+    Order cleanOrder = order;
+    cleanOrder.clientName = sanitizeString(order.clientName);
+    cleanOrder.device = sanitizeString(order.device);
+    cleanOrder.issue = sanitizeString(order.issue);
+
+    if (cleanOrder.clientName.isEmpty() || cleanOrder.device.isEmpty()) {
+        qWarning() << "Валідація провалена при редагуванні замовлення" << order.id;
         return false;
     }
 
-    bool success = m_repository->updateOrder(order);
+    bool success = m_repository->updateOrder(cleanOrder);
     if (success) {
         emit orderUpdated();
         reloadFromRepository();
     }
     return success;
+}
+
+QString OrderManager::sanitizeString(const QString& str) const {
+        QString cleanStr = str.trimmed();
+        cleanStr.replace(QRegularExpression("\\s+"), " ");
+        return cleanStr;
 }

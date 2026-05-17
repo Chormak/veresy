@@ -42,6 +42,7 @@ private:
   bool createOrder(const QString& name, const QString& dev, const QString& iss, OrderStatus stat);
   std::vector<Order> m_orderCache;
   std::unique_ptr<OrderRepository> m_repository;
+  QString sanitizeString(const QString& str) const;
 };
 
 #endif
