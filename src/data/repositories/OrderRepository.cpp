@@ -11,7 +11,7 @@
 
 #include "OrderRepository.h"
 
-bool OrderRepository::insertOrder(const Order& order) {
+OperationResult OrderRepository::insertOrder(const Order& order) {
     QSqlQuery query;
     query.prepare("INSERT INTO orders (client_name, device, issue, status) "
                   "VALUES (:name, :device, :issue, :status)");
@@ -23,12 +23,12 @@ bool OrderRepository::insertOrder(const Order& order) {
 
     if (!query.exec()) {
         qCritical() << "SQL Error (insert):" << query.lastError().text();
-        return false;
+        return OperationResult::Fail("Помилка бази даних: " + query.lastError().text());
     }
-    return true;
+    return OperationResult::Ok();
 }
 
-bool OrderRepository::updateStatus(int id, OrderStatus status) {
+OperationResult OrderRepository::updateStatus(int id, OrderStatus status) {
     QSqlQuery query;
     query.prepare("UPDATE orders SET status = :status WHERE id = :id");
     query.bindValue(":status", static_cast<int>(status));
@@ -36,23 +36,23 @@ bool OrderRepository::updateStatus(int id, OrderStatus status) {
     
     if (!query.exec()) {
         qCritical() << "SQL Error (update):" << query.lastError().text();
-        return false;
+        return OperationResult::Fail("Помилка бази даних: " + query.lastError().text());
     }
-    return true;
+    return OperationResult::Ok();
 }
 
-bool OrderRepository::deleteOrder(int id) {
+OperationResult OrderRepository::deleteOrder(int id) {
     if (id <= 0)
-        return false;
+        return OperationResult::Fail("Помилка номера клієнта: ");
     QSqlQuery query;
     query.prepare("DELETE FROM orders WHERE id = :id");
     query.bindValue(":id", id);
 
     if (!query.exec()) {
         qCritical() << "SQL Error (delete):" << query.lastError().text();
-        return false;
+        return OperationResult::Fail("Помилка бази даних: " + query.lastError().text());
     }
-    return true;
+    return OperationResult::Ok();
 }
 
 std::vector<Order> OrderRepository::selectAllOrders() {

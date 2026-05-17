@@ -25,12 +25,12 @@ class OrderManager : public QObject {
 public:
   explicit OrderManager(QObject *parent = nullptr);
 
-  bool addOrder(const QString& name, const QString& dev, const QString& iss);
+  OperationResult addOrder(const QString& name, const QString& dev, const QString& iss);
   bool changeStatus(int id, OrderStatus status);
-  bool deleteOrder(int id);
+  OperationResult deleteOrder(int id);
   void reloadFromRepository();
   std::vector<Order> getOrders() const;
-  bool updateOrder(const Order& order);
+  OperationResult updateOrder(const Order& order);
 
   signals:
   void orderCreated();

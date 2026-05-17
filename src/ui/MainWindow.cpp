@@ -74,10 +74,11 @@ void MainWindow::reloadOrders(const QString &filter) {
 void MainWindow::onAddOrderClicked() {
   OrderDialog dialog(this);
   if (dialog.exec() == QDialog::Accepted) {
-    if (m_orderManager->addOrder(dialog.getClientName(), dialog.getDevice(), dialog.getIssue())) {
+    OperationResult result = m_orderManager->addOrder(dialog.getClientName(), dialog.getDevice(), dialog.getIssue());
+    if (result.success) {
       QMessageBox::information(this, "Успіх", "Замовлення успішно додано!");
     } else {
-      QMessageBox::warning(this, "Помилка валідації", "Будь ласка, заповніть обов'язкові поля (Клієнт та Пристрій).");
+      QMessageBox::warning(this, "Помилка", result.errorMassage);
     }
   }
 }
@@ -87,9 +88,9 @@ void MainWindow::onDeleteOrderClicked(int id) {
                                                           "Ви впевнені, що хочете видалити замовдення №" + QString::number(id) + "?",
                                                           QMessageBox::Yes | QMessageBox::No);
   if (res == QMessageBox::Yes) {
-    if (!m_orderManager->deleteOrder(id)) {
-      QMessageBox::critical(this, "Помилка видалення",
-                            "База даних відхилила запит на видалення.");
+    OperationResult result = m_orderManager->deleteOrder(id);
+    if (!result.success) {
+      QMessageBox::critical(this, "Помилка видалення", result.errorMassage);
     }
   }
 }
@@ -115,8 +116,8 @@ void MainWindow::onRowDoubleClicked(const QModelIndex &index) {
     updatedOrder.issue = dialog.getIssue();
     updatedOrder.status = targetOrder.status;
     updatedOrder.createdAt = targetOrder.createdAt;
-
-    if (m_orderManager->updateOrder(updatedOrder)) {
+    OperationResult result = m_orderManager->updateOrder(updatedOrder);
+    if (result.success) {
       QMessageBox::information(this, "Успіх", "Замовдкння успішно оновлено!");
     } else {
       QMessageBox::warning(this, "Помилка валідації", "Не вдалося оновити. Перевірте обов'язкові поля. ");

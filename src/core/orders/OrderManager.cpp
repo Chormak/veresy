@@ -25,65 +25,66 @@ std::vector<Order> OrderManager::getOrders() const {
 
 bool OrderManager::createOrder(const QString& name, const QString& dev, const QString& iss, OrderStatus stat) {
     Order order{0, name, dev, iss, stat, QDateTime::currentDateTime()};
-    return m_repository->insertOrder(order);
+    OperationResult res = m_repository->insertOrder(order);
+    return res.success;
 }
 
 bool OrderManager::changeStatus(int id, OrderStatus status) {
     for (auto& order : m_orderCache) {
         if (order.id == id) {
             order.status = status;
-            return updateOrder(order);
+            OperationResult res = updateOrder(order);
+            return res.success;
         }
     }
     return false;
 }
 
-bool OrderManager::deleteOrder(int id) {
-    bool success = m_repository->deleteOrder(id);
-    if (success) {
+OperationResult OrderManager::deleteOrder(int id) {
+    OperationResult ress = m_repository->deleteOrder(id);
+    if (ress.success) {
         emit orderDeleted();
         reloadFromRepository();
     }
-    return success;
+    return ress;
 }
 
-bool OrderManager::addOrder(const QString& name, const QString& dev, const QString& iss) {
+OperationResult OrderManager::addOrder(const QString& name, const QString& dev, const QString& iss) {
     QString cleanName = sanitizeString(name);
     QString cleanDevice = sanitizeString(dev);
     QString cleanIssue = sanitizeString(iss);
 
     if (cleanName.isEmpty() || cleanDevice.isEmpty()) {
-        qWarning() << "Валідація провалена: порожні поля після санітизації";
-        return false;
+        return OperationResult::Fail("Ім'я клієнта та назва пристрою не можуть бути порожніми.");
     } 
     QString finalIssue = cleanIssue.isEmpty() ? "Діагностика" : cleanIssue;
-    
-    bool success = createOrder(cleanName, cleanDevice, finalIssue, OrderStatus::Created);
-    if (success) {
+
+    OperationResult res = m_repository->insertOrder({0, cleanName, cleanDevice, finalIssue, OrderStatus::Created, QDateTime::currentDateTime()});
+    if (res.success) {
         emit orderCreated();
         reloadFromRepository();
     } 
 
-    return success;
+    return res;
 }
 
-bool OrderManager::updateOrder(const Order& order) {
+OperationResult OrderManager::updateOrder(const Order& order) {
     Order cleanOrder = order;
     cleanOrder.clientName = sanitizeString(order.clientName);
     cleanOrder.device = sanitizeString(order.device);
     cleanOrder.issue = sanitizeString(order.issue);
 
     if (cleanOrder.clientName.isEmpty() || cleanOrder.device.isEmpty()) {
-        qWarning() << "Валідація провалена при редагуванні замовлення" << order.id;
-        return false;
+        return OperationResult::Fail("Ім'я клієнта та назва пристрою не можуть бути порожніми.");
     }
 
     bool success = m_repository->updateOrder(cleanOrder);
     if (success) {
         emit orderUpdated();
         reloadFromRepository();
+        return OperationResult::Ok();
     }
-    return success;
+    return OperationResult::Fail("Не вдалося оновити замовлення в базі даних");
 }
 
 QString OrderManager::sanitizeString(const QString& str) const {

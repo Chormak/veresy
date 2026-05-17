@@ -22,9 +22,9 @@ class OrderRepository {
 public:
     OrderRepository() = default;
 
-    bool insertOrder(const Order& order);
-    bool updateStatus(int id, OrderStatus status);
-    bool deleteOrder(int id);
+    OperationResult insertOrder(const Order& order);
+    OperationResult updateStatus(int id, OrderStatus status);
+    OperationResult deleteOrder(int id);
     std::vector<Order> selectAllOrders();
     bool updateOrder(const Order& order);
 };

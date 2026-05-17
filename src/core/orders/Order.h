@@ -50,4 +50,10 @@ struct Order {
   QDateTime createdAt;
 };
 
+struct OperationResult {
+  bool success;
+  QString errorMassage;
+  static OperationResult Ok() { return {true, ""};}
+  static OperationResult Fail(const QString& message) { return {false, message};}
+};
 #endif
