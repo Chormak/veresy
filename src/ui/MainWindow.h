@@ -42,6 +42,7 @@ private slots:
   void onAddOrderClicked();
   void onDeleteOrderClicked(int id);
   void onSearchTextChanged(const QString &text);
+  void onRowDoubleClicked(const QModelIndex &index);
 };
 
 #endif

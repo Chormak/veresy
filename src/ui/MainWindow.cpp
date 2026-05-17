@@ -52,6 +52,8 @@ void MainWindow::setupUi() {
   connect(m_orderManager.get(), &OrderManager::ordersReloaded, this, [this]() {
     this->reloadOrders(m_searchEdit->text());
   });
+
+  connect(m_view, &QTableView::doubleClicked, this, &MainWindow::onRowDoubleClicked);
 }
 
 void MainWindow::reloadOrders(const QString &filter) {
@@ -96,4 +98,29 @@ void MainWindow::onSearchTextChanged(const QString &text) {
   reloadOrders(text);
 }
 
+void MainWindow::onRowDoubleClicked(const QModelIndex &index) {
+  if (!index.isValid()) return;
+  int row = index.row();
+  auto orders = m_orderManager->getOrders();
+  if (row >= orders.size()) return;
+  const Order& targetOrder = orders[row];
+  OrderDialog dialog(this);
+  dialog.setOrderData(targetOrder);
+
+  if (dialog.exec() == QDialog::Accepted) {
+    Order updatedOrder;
+    updatedOrder.id = targetOrder.id;
+    updatedOrder.clientName = dialog.getClientName();
+    updatedOrder.device = dialog.getDevice();
+    updatedOrder.issue = dialog.getIssue();
+    updatedOrder.status = targetOrder.status;
+    updatedOrder.createdAt = targetOrder.createdAt;
+
+    if (m_orderManager->updateOrder(updatedOrder)) {
+      QMessageBox::information(this, "Успіх", "Замовдкння успішно оновлено!");
+    } else {
+      QMessageBox::warning(this, "Помилка валідації", "Не вдалося оновити. Перевірте обов'язкові поля. ");
+    }
+  }
+}
 MainWindow::~MainWindow() {}

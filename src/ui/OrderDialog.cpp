@@ -27,3 +27,15 @@ OrderDialog::OrderDialog(QWidget *parent) : QDialog(parent) {
 
   connect(btnSave, &QPushButton::clicked, this, &QDialog::accept);
 }
+
+void OrderDialog::setOrderData(const Order& order) {
+  setWindowTitle("Редагування замдвлення №" + QString::number(order.id));
+
+  m_currentOrderId = order.id;
+  m_currentStatus = order.status;
+  m_currentCreatedAt = order.createdAt;
+
+  m_clientEdit->setText(order.clientName);
+  m_deviceEdit->setText(order.device);
+  m_issueEdit->setText(order.issue);
+}

@@ -15,12 +15,15 @@
 #include <QLineEdit>
 #include <QFormLayout>
 #include <QPushButton>
+#include "../core/orders/Order.h"
 
 class OrderDialog : public QDialog {
   Q_OBJECT
 
 public:
-  OrderDialog(QWidget *parent = nullptr);
+  explicit OrderDialog(QWidget *parent = nullptr);
+
+  void setOrderData(const Order& order);
 
   QString getClientName() const { return m_clientEdit->text(); }
   QString getDevice() const { return m_deviceEdit->text(); }
@@ -30,6 +33,9 @@ private:
   QLineEdit *m_clientEdit;
   QLineEdit *m_deviceEdit;
   QLineEdit *m_issueEdit;
+  int m_currentOrderId = 0;
+  OrderStatus m_currentStatus = OrderStatus::Created;
+  QDateTime m_currentCreatedAt;
 };
 
 #endif
