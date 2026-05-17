@@ -72,3 +72,23 @@ std::vector<Order> OrderRepository::selectAllOrders() {
     }
     return orders;
 }
+
+bool OrderRepository::updateOrder(const Order& order) {
+    if (order.id <= 0) return false;
+
+    QSqlQuery query;
+    query.prepare("UPDATE orders SET client_name = :name, device = :device, "
+                  "issue = :issue, status = :status WHERE id = :id");
+
+    query.bindValue(":name", order.clientName);
+    query.bindValue(":device", order.device);
+    query.bindValue(":issue", order.issue);
+    query.bindValue(":status", static_cast<int>(order.status));
+    query.bindValue(":id", order.id);
+
+    if (!query.exec()) {
+        qCritical() << "SQL Error (Update Order):" << query.lastError().text();
+        return false;
+    }
+    return true;
+}

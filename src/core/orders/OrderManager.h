@@ -30,6 +30,7 @@ public:
   bool deleteOrder(int id);
   void reloadFromRepository();
   std::vector<Order> getOrders() const;
+  bool updateOrder(const Order& order);
 
   signals:
   void orderCreated();

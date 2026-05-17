@@ -25,7 +25,8 @@ public:
     bool insertOrder(const Order& order);
     bool updateStatus(int id, OrderStatus status);
     bool deleteOrder(int id);
-    std::vector<Order> selectAllOrders();    
+    std::vector<Order> selectAllOrders();
+    bool updateOrder(const Order& order);
 };
 
 #endif

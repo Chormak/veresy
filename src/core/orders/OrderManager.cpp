@@ -28,12 +28,13 @@ bool OrderManager::createOrder(const QString& name, const QString& dev, const QS
 }
 
 bool OrderManager::changeStatus(int id, OrderStatus status) {
-    bool success = m_repository->updateStatus(id, status);
-    if (success) {
-        emit orderUpdated();
-        reloadFromRepository();
+    for (auto& order : m_orderCache) {
+        if (order.id == id) {
+            order.status = status;
+            return updateOrder(order);
+        }
     }
-    return success;
+    return false;
 }
 
 bool OrderManager::deleteOrder(int id) {
@@ -52,6 +53,20 @@ bool OrderManager::addOrder(const QString& name, const QString& dev, const QStri
     bool success = createOrder(name, dev, finalIssue, OrderStatus::Created);
     if (success) {
         emit orderCreated();
+        reloadFromRepository();
+    }
+    return success;
+}
+
+bool OrderManager::updateOrder(const Order& order) {
+    if (order.clientName.trimmed().isEmpty() || order.device.trimmed().isEmpty()) {
+        qWarning() << "Валідація провадена при редагуванні замовлення" << order.id;
+        return false;
+    }
+
+    bool success = m_repository->updateOrder(order);
+    if (success) {
+        emit orderUpdated();
         reloadFromRepository();
     }
     return success;
