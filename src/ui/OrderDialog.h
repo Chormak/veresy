@@ -29,6 +29,11 @@ public:
   QString getDevice() const { return m_deviceEdit->text(); }
   QString getIssue() const { return m_issueEdit->text(); }
 
+  void reject() override;
+
+private slots:
+  void setDirty();
+
 private:
   QLineEdit *m_clientEdit;
   QLineEdit *m_deviceEdit;
@@ -36,6 +41,9 @@ private:
   int m_currentOrderId = 0;
   OrderStatus m_currentStatus = OrderStatus::Created;
   QDateTime m_currentCreatedAt;
+
+  bool m_isDirty = false;
+  bool m_isInitializing = false;
 };
 
 #endif
