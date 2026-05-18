@@ -29,10 +29,15 @@ bool OrderManager::createOrder(const QString& name, const QString& dev, const QS
     return res.success;
 }
 
-bool OrderManager::changeStatus(int id, OrderStatus status) {
+bool OrderManager::changeStatus(int id, OrderStatus newStatus) {
     for (auto& order : m_orderCache) {
         if (order.id == id) {
-            order.status = status;
+            if (!isValidStatusTransition(order.status, newStatus)) {
+                qWarning() << "Бізнес-правило порушено! Спроба переходу з"
+                            <<static_cast<int>(order.status) << "в" << static_cast<int>(newStatus);
+                return false;
+            }
+            order.status = newStatus;
             OperationResult res = updateOrder(order);
             return res.success;
         }
@@ -76,6 +81,15 @@ OperationResult OrderManager::updateOrder(const Order& order) {
 
     if (cleanOrder.clientName.isEmpty() || cleanOrder.device.isEmpty()) {
         return OperationResult::Fail("Ім'я клієнта та назва пристрою не можуть бути порожніми.");
+    }
+
+    for (const auto& oldOrder : m_orderCache) {
+        if (oldOrder.id == cleanOrder.id) {
+            if (!isValidStatusTransition(oldOrder.status, cleanOrder.status)) {
+                return OperationResult::Fail("Неприпустима зміна статусу для цього замовлення!");
+            }
+            break;
+        }
     }
 
     bool success = m_repository->updateOrder(cleanOrder);

@@ -41,6 +41,30 @@ inline OrderStatus stringToStatus(const QString& statusStr) {
     return OrderStatus::Created;
 }
 
+inline bool isValidStatusTransition(OrderStatus from, OrderStatus to) {
+  if (from == to) return true;
+
+  switch (from) {
+    case OrderStatus::Created:
+    return (to == OrderStatus::InProgress || to == OrderStatus::Cancelled);
+
+    case OrderStatus::InProgress:
+    return (to == OrderStatus::WaitingParts || to == OrderStatus::Done || to == OrderStatus::Cancelled);
+
+    case OrderStatus::WaitingParts:
+    return (to == OrderStatus::InProgress || to == OrderStatus::Cancelled);
+
+    case OrderStatus::Done:
+    return false;
+
+    case OrderStatus::Cancelled:
+    return false;
+
+    default:
+    return false;
+  }
+}
+
 struct Order {
   int id;
   QString clientName;
