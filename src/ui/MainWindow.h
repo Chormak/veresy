@@ -20,7 +20,7 @@
 #include "OrderDialog.h"
 #include <QLineEdit>
 #include "OrderTableModel.h"
-
+#include <QShortcut>
 
 class MainWindow : public QMainWindow {
   Q_OBJECT
@@ -43,6 +43,7 @@ private slots:
   void onDeleteOrderClicked(int id);
   void onSearchTextChanged(const QString &text);
   void onRowDoubleClicked(const QModelIndex &index);
+  void onEditCurrentOrderRequested();
 };
 
 #endif

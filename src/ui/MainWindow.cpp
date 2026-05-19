@@ -54,6 +54,33 @@ void MainWindow::setupUi() {
   });
 
   connect(m_view, &QTableView::doubleClicked, this, &MainWindow::onRowDoubleClicked);
+
+  QShortcut *shortcutNew = new QShortcut(QKeySequence("Ctrl+N"), this);
+  connect(shortcutNew, &QShortcut::activated, this, &MainWindow::onAddOrderClicked);
+
+  QShortcut *shortcutSearch = new QShortcut(QKeySequence("Ctrl+F"), this);
+  connect(shortcutSearch, &QShortcut::activated, [this]() {
+    m_searchEdit->setFocus();
+    m_searchEdit->selectAll();
+  });
+
+  QShortcut *shortcutDelete = new QShortcut(QKeySequence(Qt::Key_Delete), this);
+  connect(shortcutDelete, &QShortcut::activated, [this]() {
+    QModelIndex currentIndex = m_view->currentIndex();
+    if (currentIndex.isValid()) {
+      auto orders = m_orderManager->getOrders();
+      int row = currentIndex.row();
+      if (row < orders.size()) {
+        this->onDeleteOrderClicked(orders[row].id);
+      }
+    }
+  });
+
+  QShortcut *shortcutEnter = new QShortcut(QKeySequence(Qt::Key_Return), this);
+  QShortcut *shortcutEnterNum = new QShortcut(QKeySequence(Qt::Key_Enter), this);
+
+  connect(shortcutEnter, &QShortcut::activated, this, &MainWindow::onEditCurrentOrderRequested);
+  connect(shortcutEnterNum, &QShortcut::activated, this, &MainWindow::onEditCurrentOrderRequested);
 }
 
 void MainWindow::reloadOrders(const QString &filter) {
@@ -125,4 +152,12 @@ void MainWindow::onRowDoubleClicked(const QModelIndex &index) {
     }
   }
 }
+
+void MainWindow::onEditCurrentOrderRequested(){
+  if (m_searchEdit->hasFocus()) return;
+  QModelIndex currentIndex = m_view->currentIndex();
+  if (!currentIndex.isValid()) return;
+  this->onRowDoubleClicked(currentIndex);
+}
+
 MainWindow::~MainWindow() {}
