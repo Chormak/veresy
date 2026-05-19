@@ -27,11 +27,21 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 void MainWindow::setupUi() {
   auto *centralWidget = new QWidget(this);
   auto *layout = new QVBoxLayout(centralWidget);
+  auto *topLayout = new QHBoxLayout();
 
   m_searchEdit = new QLineEdit(this);
   m_searchEdit->setPlaceholderText("Пошук за клієнтом або пристроєм...");
-  layout->addWidget(m_searchEdit);
-  connect(m_searchEdit, &QLineEdit::textChanged, this, &MainWindow::onSearchTextChanged);
+  topLayout->addWidget(m_searchEdit, 3);
+  
+  m_statusFilterCombo = new QComboBox(this);
+  m_statusFilterCombo->addItems({
+    "Всі замовлення",
+    "Тільки активні",
+    "Тільки завершені"
+  });
+  topLayout->addWidget(m_statusFilterCombo, 1);
+
+  layout->addLayout(topLayout);
 
   auto *btnAdd = new QPushButton("Створити замовлення", this);
   layout->addWidget(btnAdd);
@@ -41,6 +51,9 @@ void MainWindow::setupUi() {
   layout->addWidget(m_view);
   setCentralWidget(centralWidget);
 
+  connect(m_searchEdit, &QLineEdit::textChanged, this, [this](){ this->reloadOrders(); });
+  connect(m_statusFilterCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](){ this->reloadOrders(); });
+  
   connect(m_view, &OrderTableView::statusChanged, this, [this](int id, int index){
     if (!m_orderManager->changeStatus(id, static_cast<OrderStatus>(index))) {
       QMessageBox::critical(this, "Помидка", "Не вдалося оновити статус.");
@@ -49,9 +62,7 @@ void MainWindow::setupUi() {
   });
   connect(m_view, &OrderTableView::deleteRequested, this, &MainWindow::onDeleteOrderClicked);
 
-  connect(m_orderManager.get(), &OrderManager::ordersReloaded, this, [this]() {
-    this->reloadOrders(m_searchEdit->text());
-  });
+  connect(m_orderManager.get(), &OrderManager::ordersReloaded, this, [this]() { this->reloadOrders(); });
 
   connect(m_view, &QTableView::doubleClicked, this, &MainWindow::onRowDoubleClicked);
 
@@ -83,18 +94,28 @@ void MainWindow::setupUi() {
   connect(shortcutEnterNum, &QShortcut::activated, this, &MainWindow::onEditCurrentOrderRequested);
 }
 
-void MainWindow::reloadOrders(const QString &filter) {
+void MainWindow::reloadOrders() {
   auto allOrders = m_orderManager->getOrders();
   std::vector<Order> filteredOrders;
 
-  for (const auto& order : allOrders) {
-    if (filter.isEmpty() ||
-    order.clientName.contains(filter, Qt::CaseInsensitive) ||
-    order.device.contains(filter, Qt::CaseInsensitive)) {
-    filteredOrders.push_back(order);
-    }
-  }
+  QString filterText = m_searchEdit->text();
+  int filterMode = m_statusFilterCombo->currentIndex();
 
+  for (const auto& order : allOrders) {
+    bool matchesSearch = filterText.isEmpty() ||
+                         order.clientName.contains(filterText, Qt::CaseInsensitive) ||
+                         order.device.contains(filterText, Qt::CaseInsensitive);
+    if (!matchesSearch) continue;
+    bool matchesStatus = true;
+    if (filterMode == 1) {
+      matchesStatus = (order.status != OrderStatus::Done && order.status != OrderStatus::Cancelled);
+    }
+    else if (filterMode == 2) {
+      matchesStatus = (order.status == OrderStatus::Done || order.status == OrderStatus::Cancelled);
+    }
+    if (!matchesStatus) continue;
+    filteredOrders.push_back(order);
+  }
   m_view->updateData(filteredOrders);
 }
 
@@ -121,10 +142,6 @@ void MainWindow::onDeleteOrderClicked(int id) {
       QMessageBox::critical(this, "Помилка видалення", result.errorMassage);
     }
   }
-}
-
-void MainWindow::onSearchTextChanged(const QString &text) {
-  reloadOrders(text);
 }
 
 void MainWindow::onRowDoubleClicked(const QModelIndex &index) {

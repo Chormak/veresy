@@ -21,6 +21,7 @@
 #include <QLineEdit>
 #include "OrderTableModel.h"
 #include <QShortcut>
+#include <QComboBox>
 
 class MainWindow : public QMainWindow {
   Q_OBJECT
@@ -31,8 +32,9 @@ public:
 
 private:
   void setupUi();
-  void reloadOrders(const QString &filter = "");
+  void reloadOrders();
 
+  QComboBox *m_statusFilterCombo;
   std::unique_ptr<OrderManager> m_orderManager;
   QLineEdit *m_searchEdit;
   OrderTableView *m_view;
@@ -41,7 +43,6 @@ private:
 private slots:
   void onAddOrderClicked();
   void onDeleteOrderClicked(int id);
-  void onSearchTextChanged(const QString &text);
   void onRowDoubleClicked(const QModelIndex &index);
   void onEditCurrentOrderRequested();
 };
