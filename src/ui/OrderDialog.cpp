@@ -23,17 +23,54 @@ OrderDialog::OrderDialog(QWidget *parent) : QDialog(parent) {
   layout->addRow("Пристрій:", m_deviceEdit);
   layout->addRow("Проблема:", m_issueEdit);
 
-  auto *btnSave = new QPushButton("Зберегти" , this);
+  m_btnSave = new QPushButton("Зберегти" , this);
   auto *btnCancel = new QPushButton("Скасувати", this);
-  layout->addWidget(btnSave);
+  layout->addWidget(m_btnSave);
   layout->addWidget(btnCancel);
 
-  connect(btnSave, &QPushButton::clicked, this, &QDialog::accept);
+  setTabOrder(m_clientEdit, m_deviceEdit);
+  setTabOrder(m_deviceEdit, m_issueEdit);
+  setTabOrder(m_issueEdit, m_btnSave);
+  setTabOrder(m_btnSave, btnCancel);
+
+  m_clientEdit->installEventFilter(this);
+  m_deviceEdit->installEventFilter(this);
+  m_issueEdit->installEventFilter(this);
+
+  connect(m_btnSave, &QPushButton::clicked, this, &QDialog::accept);
   connect(btnCancel, &QPushButton::clicked, this, &QDialog::reject);
 
   connect(m_clientEdit, &QLineEdit::textChanged, this, &OrderDialog::setDirty);
   connect(m_deviceEdit, &QLineEdit::textChanged, this, &OrderDialog::setDirty);
   connect(m_issueEdit, &QLineEdit::textChanged, this, &OrderDialog::setDirty);
+
+  focusFirstField();
+}
+
+void OrderDialog::focusFirstField() {
+  m_clientEdit->setFocus();
+  m_clientEdit->selectAll();
+}
+
+bool OrderDialog::eventFilter(QObject *watched, QEvent *event) {
+  if (event->type() == QEvent::KeyPress) {
+    QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+    if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
+      if (watched == m_clientEdit) {
+        m_deviceEdit->setFocus();
+        return true;
+      }
+      else if (watched == m_deviceEdit) {
+        m_issueEdit->setFocus();
+        return true;
+      }
+      else if (watched == m_issueEdit) {
+        m_btnSave->setFocus();
+        return true;
+      }
+    }
+  }
+  return QDialog::eventFilter(watched, event);
 }
 
 void OrderDialog::setDirty() {

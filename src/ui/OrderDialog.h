@@ -15,6 +15,7 @@
 #include <QLineEdit>
 #include <QFormLayout>
 #include <QPushButton>
+#include <QKeyEvent>
 #include "../core/orders/Order.h"
 
 class OrderDialog : public QDialog {
@@ -24,12 +25,16 @@ public:
   explicit OrderDialog(QWidget *parent = nullptr);
 
   void setOrderData(const Order& order);
+  void focusFirstField();
 
   QString getClientName() const { return m_clientEdit->text(); }
   QString getDevice() const { return m_deviceEdit->text(); }
   QString getIssue() const { return m_issueEdit->text(); }
 
   void reject() override;
+
+protected:
+  bool eventFilter(QObject *watched, QEvent *event) override;
 
 private slots:
   void setDirty();
@@ -38,6 +43,7 @@ private:
   QLineEdit *m_clientEdit;
   QLineEdit *m_deviceEdit;
   QLineEdit *m_issueEdit;
+  QPushButton *m_btnSave;
   int m_currentOrderId = 0;
   OrderStatus m_currentStatus = OrderStatus::Created;
   QDateTime m_currentCreatedAt;

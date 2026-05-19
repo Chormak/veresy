@@ -77,6 +77,7 @@ void MainWindow::onAddOrderClicked() {
     OperationResult result = m_orderManager->addOrder(dialog.getClientName(), dialog.getDevice(), dialog.getIssue());
     if (result.success) {
       QMessageBox::information(this, "Успіх", "Замовлення успішно додано!");
+      m_searchEdit->setFocus();
     } else {
       QMessageBox::warning(this, "Помилка", result.errorMassage);
     }
