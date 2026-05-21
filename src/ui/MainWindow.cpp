@@ -14,6 +14,7 @@
 #include "../core/orders/Order.h"
 #include <QMessageBox>
 #include <QTimer>
+#include <QStatusBar>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
   setWindowTitle("veresy");
@@ -63,6 +64,14 @@ void MainWindow::setupUi() {
   QTimer::singleShot(0, this, [this]() {
     reloadOrders();
   });
+
+  m_statusTotalLabel = new QLabel(this);
+  m_statusActiveLabel = new QLabel(this);
+  m_statusFilterLabel = new QLabel(this);
+
+  statusBar()->addPermanentWidget(m_statusFilterLabel, 2);
+  statusBar()->addPermanentWidget(m_statusActiveLabel, 1);
+  statusBar()->addPermanentWidget(m_statusTotalLabel, 1);
 
   connect(m_searchEdit, &QLineEdit::textChanged, this, [this](){ this->reloadOrders(); });
   connect(m_statusFilterCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](){ this->reloadOrders(); });
@@ -117,7 +126,13 @@ void MainWindow::reloadOrders() {
 
   bool isFilteringActive = !filterText.isEmpty() || filterMode != 0;
 
+  int totalCount = allOrders.size();
+  int activeCount = 0;
+
   for (const auto& order : allOrders) {
+    if (order.status != OrderStatus:: Done && order.status != OrderStatus::Cancelled) {
+      activeCount++;
+    }
     bool matchesSearch = filterText.isEmpty() ||
                          order.clientName.contains(filterText, Qt::CaseInsensitive) ||
                          order.device.contains(filterText, Qt::CaseInsensitive);
@@ -134,6 +149,15 @@ void MainWindow::reloadOrders() {
     }
   }
   m_view->updateData(filteredOrders, isFilteringActive);
+
+  m_statusTotalLabel->setText(QString("Всього замовлент: %1").arg(totalCount));
+  m_statusActiveLabel->setText(QString("Активні ремонти: %1").arg(activeCount));
+
+  QString filterInfo = "Фільтр: " + m_statusFilterCombo->currentText();
+  if (!filterText.isEmpty()) {
+    filterInfo += QString(" + Пошук: \"%1\"").arg(filterText);
+  }
+  m_statusFilterLabel->setText(filterInfo);
 }
 
 void MainWindow::onAddOrderClicked() {

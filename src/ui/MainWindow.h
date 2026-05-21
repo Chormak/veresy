@@ -23,6 +23,7 @@
 #include <QShortcut>
 #include <QComboBox>
 #include <QSortFilterProxyModel>
+#include <QLabel>
 
 class MainWindow : public QMainWindow {
   Q_OBJECT
@@ -39,8 +40,11 @@ private:
   std::unique_ptr<OrderManager> m_orderManager;
   QLineEdit *m_searchEdit;
   OrderTableView *m_view;
-  OrderTableModel *m_model;
   QSortFilterProxyModel *m_proxyModel;
+
+  QLabel *m_statusTotalLabel;
+  QLabel *m_statusActiveLabel;
+  QLabel *m_statusFilterLabel;
 
 private slots:
   void onAddOrderClicked();
