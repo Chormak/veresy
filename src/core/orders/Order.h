@@ -13,6 +13,7 @@
 #include <QString>
 #include <QDateTime>
 #include <QColor>
+#include <vector>
 
 enum class OrderStatus {
   Created = 0,
@@ -81,6 +82,30 @@ inline QColor getStatusColor(OrderStatus status) {
     default:
      return QColor("#212529");
   }
+}
+
+inline std::vector<OrderStatus> getNextAllowedStatuses(OrderStatus current) {
+  std::vector<OrderStatus> allowed;
+
+  switch (current) {
+  case OrderStatus::Created:
+   allowed.push_back(OrderStatus::InProgress);
+   allowed.push_back(OrderStatus::Cancelled);
+   break;
+  case OrderStatus::InProgress:
+   allowed.push_back(OrderStatus::WaitingParts);
+   allowed.push_back(OrderStatus::Done);
+   allowed.push_back(OrderStatus::Cancelled);
+   break;
+  case OrderStatus::WaitingParts:
+   allowed.push_back(OrderStatus::InProgress);
+   allowed.push_back(OrderStatus::Cancelled);
+   break;
+  case OrderStatus::Done:
+  case OrderStatus::Cancelled:
+   break;
+  }
+  return allowed;
 }
 
 struct Order {

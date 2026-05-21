@@ -106,3 +106,28 @@ QString OrderManager::sanitizeString(const QString& str) const {
         cleanStr.replace(QRegularExpression("\\s+"), " ");
         return cleanStr;
 }
+
+OperationResult OrderManager::moveOrderToStatus(int id, OrderStatus targetStatus) {
+    for (auto& order : m_orderCache) {
+        if (order.id == id) {
+            if (!isValidStatusTransition(order.status, targetStatus)) {
+                return OperationResult::Fail(QString("Перехід з %1 у %2 заборонений правами воркфлоу!")
+                                             .arg(statusToString(order.status))
+                                             .arg(statusToString(targetStatus)));
+            }
+            order.status = targetStatus;
+            OperationResult res = updateOrder(order);
+            return res;
+        }
+    }
+    return OperationResult::Fail("Замовлення не знайдено в поточному кеші.");
+}
+
+std::vector<OrderStatus> OrderManager::getAllowedActionsForOrder(int id) const {
+    for (const auto& order : m_orderCache) {
+        if (order.id == id) {
+            return getNextAllowedStatuses(order.status);
+        }
+    }
+    return {};
+}

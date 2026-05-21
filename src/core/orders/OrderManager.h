@@ -31,6 +31,8 @@ public:
   void reloadFromRepository();
   std::vector<Order> getOrders() const;
   OperationResult updateOrder(const Order& order);
+  OperationResult moveOrderToStatus(int id, OrderStatus targetStatus);
+  std::vector<OrderStatus> getAllowedActionsForOrder(int id) const;
 
   signals:
   void orderCreated();
