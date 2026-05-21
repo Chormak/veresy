@@ -31,6 +31,7 @@ QVariant OrderTableModel::headerData(int section, Qt::Orientation orientation, i
     case 3: return "Проблема";
     case 4: return "Статус";
     case 5: return "Дата";
+    case 6: return "Дії";
     default: return QVariant();
   }
 }

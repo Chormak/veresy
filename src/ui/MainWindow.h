@@ -22,6 +22,7 @@
 #include "OrderTableModel.h"
 #include <QShortcut>
 #include <QComboBox>
+#include <QSortFilterProxyModel>
 
 class MainWindow : public QMainWindow {
   Q_OBJECT
@@ -39,6 +40,7 @@ private:
   QLineEdit *m_searchEdit;
   OrderTableView *m_view;
   OrderTableModel *m_model;
+  QSortFilterProxyModel *m_proxyModel;
 
 private slots:
   void onAddOrderClicked();

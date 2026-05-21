@@ -26,6 +26,14 @@ void OrderTableView::setupAppearance() {
 
 void OrderTableView::updateData(const std::vector<Order>& orders) {
   m_model->setOrders(orders);
+
+  for (int row = 0; row < m_model->rowCount({}); ++row) {
+    setIndexWidget(m_model->index(row, 4), nullptr);
+    setIndexWidget(m_model->index(row, 6), nullptr);
+  }
+
+  QAbstractItemModel* currentModel = model();
+
   for (int i = 0; i < orders.size(); ++i) {
     const auto& order = orders[i];
 
@@ -38,13 +46,15 @@ void OrderTableView::updateData(const std::vector<Order>& orders) {
       int id = combo->property("orderId").toInt();
       emit statusChanged(id, index);
     });
-    setIndexWidget(m_model->index(i, 4), combo);
 
-    QPushButton* btnDelete = new QPushButton("Видалити");
+    QModelIndex proxyIdx = currentModel->index(i, 4);
+    setIndexWidget(proxyIdx, combo);
+
+    QPushButton* btnDelete = new QPushButton("Видалити", this);
     btnDelete->setProperty("orderId", order.id);
     connect(btnDelete, &QPushButton::clicked, [this, id = order.id](){
       emit deleteRequested(id);
     });
-    setIndexWidget(m_model->index(i, 6), btnDelete);
+    setIndexWidget(currentModel->index(i, 6), btnDelete);
   }
 }

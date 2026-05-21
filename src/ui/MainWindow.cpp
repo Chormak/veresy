@@ -13,6 +13,7 @@
 #include <QPushButton>
 #include "../core/orders/Order.h"
 #include <QMessageBox>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
   setWindowTitle("veresy");
@@ -51,6 +52,18 @@ void MainWindow::setupUi() {
   layout->addWidget(m_view);
   setCentralWidget(centralWidget);
 
+  m_proxyModel = new QSortFilterProxyModel(this);
+  m_proxyModel->setSourceModel(m_view->model());
+  m_view->setModel(m_proxyModel);
+
+  m_view->horizontalHeader()->setSortIndicatorShown(true);
+  m_view->setSortingEnabled(true);
+  m_view->sortByColumn(0, Qt::DescendingOrder); 
+  
+  QTimer::singleShot(0, this, [this]() {
+    reloadOrders();
+  });
+
   connect(m_searchEdit, &QLineEdit::textChanged, this, [this](){ this->reloadOrders(); });
   connect(m_statusFilterCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](){ this->reloadOrders(); });
   
@@ -77,10 +90,11 @@ void MainWindow::setupUi() {
 
   QShortcut *shortcutDelete = new QShortcut(QKeySequence(Qt::Key_Delete), this);
   connect(shortcutDelete, &QShortcut::activated, [this]() {
-    QModelIndex currentIndex = m_view->currentIndex();
-    if (currentIndex.isValid()) {
+    QModelIndex proxyIndex = m_view->currentIndex();
+    if (proxyIndex.isValid()) {
+      QModelIndex originalIndex = m_proxyModel->mapToSource(proxyIndex);
       auto orders = m_orderManager->getOrders();
-      int row = currentIndex.row();
+      int row = originalIndex.row();
       if (row < orders.size()) {
         this->onDeleteOrderClicked(orders[row].id);
       }
@@ -113,8 +127,9 @@ void MainWindow::reloadOrders() {
     else if (filterMode == 2) {
       matchesStatus = (order.status == OrderStatus::Done || order.status == OrderStatus::Cancelled);
     }
-    if (!matchesStatus) continue;
-    filteredOrders.push_back(order);
+    if (matchesStatus) {
+      filteredOrders.push_back(order);
+    }
   }
   m_view->updateData(filteredOrders);
 }
@@ -144,9 +159,10 @@ void MainWindow::onDeleteOrderClicked(int id) {
   }
 }
 
-void MainWindow::onRowDoubleClicked(const QModelIndex &index) {
-  if (!index.isValid()) return;
-  int row = index.row();
+void MainWindow::onRowDoubleClicked(const QModelIndex &proxyIndex) {
+  if (!proxyIndex.isValid()) return;
+  QModelIndex originalIndex = m_proxyModel->mapToSource(proxyIndex);
+  int row = originalIndex.row();
   auto orders = m_orderManager->getOrders();
   if (row >= orders.size()) return;
   const Order& targetOrder = orders[row];
