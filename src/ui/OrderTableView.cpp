@@ -12,6 +12,7 @@
 #include <QHeaderView>
 #include <QComboBox>
 #include <QPushButton>
+#include <QPainter>
 
 OrderTableView::OrderTableView(QWidget *parent) : QTableView(parent) {
   m_model = new OrderTableModel(this);
@@ -24,7 +25,10 @@ void OrderTableView::setupAppearance() {
   setSelectionBehavior(QAbstractItemView::SelectRows);
 }
 
-void OrderTableView::updateData(const std::vector<Order>& orders) {
+void OrderTableView::updateData(const std::vector<Order>& orders, bool isSearchingOrFiltering) {
+  m_isEmpty = orders.empty();
+  m_isSearchEmpty = m_isEmpty && isSearchingOrFiltering;
+
   m_model->setOrders(orders);
 
   for (int row = 0; row < m_model->rowCount({}); ++row) {
@@ -63,4 +67,26 @@ void OrderTableView::updateData(const std::vector<Order>& orders) {
     });
     setIndexWidget(currentModel->index(i, 6), btnDelete);
   }
+}
+
+void OrderTableView::paintEvent(QPaintEvent *event) {
+  QTableView::paintEvent(event);
+
+  if (!m_isEmpty) return;
+
+  QPainter painter(viewport());
+  painter.setPen(QColor("#6C757D"));
+
+  QFont font = painter.font();
+  font.setPointSize(12);
+  font.setBold(true);
+  painter.setFont(font);
+
+  QString message;
+  if (m_isSearchEmpty) {
+    message = "Нічого не знайдено за вашим запитом";
+  } else {
+    message = "Список замовлень порожній. Створіть перше замовлення!";
+  }
+  painter.drawText(viewport()->rect(), Qt::AlignCenter, message);
 }

@@ -15,21 +15,28 @@
 #include <vector>
 #include "OrderTableModel.h"
 #include "../core/orders/Order.h"
+#include <QPaintEvent>
 
 class OrderTableView : public QTableView {
   Q_OBJECT
 public:
   explicit OrderTableView(QWidget *parent = nullptr);
 
-  void updateData(const std::vector<Order>& orders);
+  void updateData(const std::vector<Order>& orders, bool isSearchingOrFiltering = false);
 
 signals:
   void statusChanged(int orderId, int statusIndex);
   void deleteRequested(int orderId);
+
+protected:
+  void paintEvent(QPaintEvent *event) override;
+
 private:
   OrderTableModel* m_model;
   void setupAppearance();
 
+  bool m_isEmpty = true;
+  bool m_isSearchEmpty = false;
 };
 
 #endif

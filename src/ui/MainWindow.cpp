@@ -115,6 +115,8 @@ void MainWindow::reloadOrders() {
   QString filterText = m_searchEdit->text();
   int filterMode = m_statusFilterCombo->currentIndex();
 
+  bool isFilteringActive = !filterText.isEmpty() || filterMode != 0;
+
   for (const auto& order : allOrders) {
     bool matchesSearch = filterText.isEmpty() ||
                          order.clientName.contains(filterText, Qt::CaseInsensitive) ||
@@ -131,7 +133,7 @@ void MainWindow::reloadOrders() {
       filteredOrders.push_back(order);
     }
   }
-  m_view->updateData(filteredOrders);
+  m_view->updateData(filteredOrders, isFilteringActive);
 }
 
 void MainWindow::onAddOrderClicked() {
