@@ -37,17 +37,26 @@ QVariant OrderTableModel::headerData(int section, Qt::Orientation orientation, i
 }
 
 QVariant OrderTableModel::data(const QModelIndex &index, int role) const {
-  if (!index.isValid() || role != Qt::DisplayRole) return QVariant();
+  if (!index.isValid()) return QVariant();
 
   const auto& order = m_orders[index.row()];
 
-  switch (index.column()) {
-    case 0: return order.id;
-    case 1: return order.clientName;
-    case 2: return order.device;
-    case 3: return order.issue;
-    case 4: return statusToString(order.status);
-    case 5: return order.createdAt.toString("dd.MM.yyyy HH:mm");
-    default: return QVariant();
+  if (role == Qt::ForegroundRole) {
+    if (index.column() == 4) {
+      return getStatusColor(order.status);
+    }
+    return QVariant();
   }
+  if (role == Qt::DisplayRole) {
+    switch (index.column()) {
+        case 0: return order.id;
+        case 1: return order.clientName;
+        case 2: return order.device;
+        case 3: return order.issue;
+        case 4: return statusToString(order.status);
+        case 5: return order.createdAt.toString("dd.MM.yyyy HH:mm");
+        default: return QVariant();
+    }
+  }
+  return QVariant();
 }

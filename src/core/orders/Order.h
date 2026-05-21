@@ -12,6 +12,7 @@
 #define ORDER_H
 #include <QString>
 #include <QDateTime>
+#include <QColor>
 
 enum class OrderStatus {
   Created = 0,
@@ -62,6 +63,23 @@ inline bool isValidStatusTransition(OrderStatus from, OrderStatus to) {
 
     default:
     return false;
+  }
+}
+
+inline QColor getStatusColor(OrderStatus status) {
+  switch (status) {
+    case OrderStatus::Created:
+     return QColor("#007BFF");
+    case OrderStatus::InProgress:
+     return QColor("#FFC107");
+    case OrderStatus::WaitingParts:
+     return QColor("#FD7E14");
+    case OrderStatus::Done:
+     return QColor("#28A745");
+    case OrderStatus::Cancelled:
+     return QColor("#6C757D");
+    default:
+     return QColor("#212529");
   }
 }
 

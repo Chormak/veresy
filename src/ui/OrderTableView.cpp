@@ -41,7 +41,13 @@ void OrderTableView::updateData(const std::vector<Order>& orders) {
     combo->addItems({"Created", "In Progress", "Waiting Parts", "Done", "Cancelled"});
     combo->setCurrentIndex(static_cast<int>(order.status));
     combo->setProperty("orderId", order.id);
+    
+    QColor statusColor = getStatusColor(order.status);
 
+    QPalette pal = combo->palette();
+    pal.setColor(QPalette::Text, statusColor);
+    pal.setColor(QPalette::WindowText, statusColor);
+    combo->setStyleSheet(QString("QComboBox { color: %1; font-weight: bold; }").arg(statusColor.name()));
     connect(combo, QOverload<int>::of(&QComboBox::currentIndexChanged), [this, combo](int index){
       int id = combo->property("orderId").toInt();
       emit statusChanged(id, index);
