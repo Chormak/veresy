@@ -64,13 +64,22 @@ OperationResult OrderManager::addOrder(const QString& name, const QString& dev, 
     } 
     QString finalIssue = cleanIssue.isEmpty() ? "Діагностика" : cleanIssue;
 
-    OperationResult res = m_repository->insertOrder({0, cleanName, cleanDevice, finalIssue, OrderStatus::Created, QDateTime::currentDateTime()});
+    Order newOrder{0, cleanName, cleanDevice, finalIssue, OrderStatus::Created, QDateTime::currentDateTime()};
+
+    OperationResult res = m_repository->insertOrder(newOrder);
+    
     if (res.success) {
+        auto currentOrders = m_repository->selectAllOrders();
+        if (!currentOrders.empty()) {
+            m_repository->logStatusChange(currentOrders.front().id, OrderStatus::Created, OrderStatus::Created, "Замовлення зареєстровано в системі");
+        }
         emit orderCreated();
         reloadFromRepository();
-    } 
-
-    return res;
+        return OperationResult::Ok();
+    }
+    else {
+        return res;
+    }
 }
 
 OperationResult OrderManager::updateOrder(const Order& order) {
@@ -115,8 +124,17 @@ OperationResult OrderManager::moveOrderToStatus(int id, OrderStatus targetStatus
                                              .arg(statusToString(order.status))
                                              .arg(statusToString(targetStatus)));
             }
+            OrderStatus oldStatus = order.status;
+
             order.status = targetStatus;
             OperationResult res = updateOrder(order);
+
+            if (res.success) {
+                QString comment = QString("Статус змінено з %1 на %2")
+                                   .arg(statusToString(oldStatus))
+                                   .arg(statusToString(targetStatus));
+                m_repository->logStatusChange(id, oldStatus, targetStatus, comment);
+            }
             return res;
         }
     }

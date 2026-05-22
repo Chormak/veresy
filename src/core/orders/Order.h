@@ -123,4 +123,14 @@ struct OperationResult {
   static OperationResult Ok() { return {true, ""};}
   static OperationResult Fail(const QString& message) { return {false, message};}
 };
+
+struct HistoryRecord {
+  int id;
+  int orderId;
+  OrderStatus oldStatus;
+  OrderStatus newStatus;
+  QDateTime timestamp;
+  QString comment;
+};
+
 #endif

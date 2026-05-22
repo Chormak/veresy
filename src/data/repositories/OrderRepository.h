@@ -27,6 +27,7 @@ public:
     OperationResult deleteOrder(int id);
     std::vector<Order> selectAllOrders();
     bool updateOrder(const Order& order);
+    OperationResult logStatusChange(int orderId, OrderStatus oldStatus, OrderStatus newStatus, const QString& comment = "");
 };
 
 #endif

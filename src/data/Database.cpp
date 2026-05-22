@@ -37,19 +37,34 @@ void Database::close() {
 bool Database::createTable() {
   QSqlQuery query;
 
-  QString sql = "CREATE TABLE IF NOT EXISTS orders ("
+  QString sqlOrders = "CREATE TABLE IF NOT EXISTS orders ("
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                 "client_name TEXT NOT NULL, "
                 "device TEXT, "
                 "issue TEXT, "
-                "status TEXT, "
+                "status INTEGER, "
                 "created_at DATETIME DEFAULT CURRENT_TIMESTAMP"
                 ");";
-  if (!query.exec(sql)) {
-    qDebug() << "Помилка створення таблиці:" << query.lastError().text();
+  if (!query.exec(sqlOrders)) {
+    qCritical() << "Помилка створення таблиці:" << query.lastError().text();
     return false;
   }
 
-  qDebug() << "Таблиця 'orders' готова!";
+  QString sqlHistory = "CREATE TABLE IF NOT EXISTS order_history ("
+                       "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                       "order_id INTEGER NOT NULL, "
+                       "old_status INTEGER, "
+                       "new_status INTAEGER NOT NULL, "
+                       "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, "
+                       "comment TEXT, "
+                       "FOREIGN KEY(order_id) REFERENCES orders(id) ON DELETE CASCADE"
+                       ");";
+
+  if (!query.exec(sqlHistory)) {
+    qCritical() << "SQL Error (create history table):" <<query.lastError().text();
+    return false;
+  }
+
+  qDebug() << "Таблиці бази даних готові до роботи!";
   return true;
 }

@@ -92,3 +92,24 @@ bool OrderRepository::updateOrder(const Order& order) {
     }
     return true;
 }
+
+OperationResult OrderRepository::logStatusChange(int orderId, OrderStatus oldStatus, OrderStatus newStatus, const QString& comment) {
+    QSqlQuery query;
+    query.prepare("INSERT INTO order_history (order_id, old_status, new_status, comment) "
+                  "VALUES (:order_id, :old_status, :new_status, :comment)");
+
+    query.bindValue(":order_id", orderId);
+    if (oldStatus == newStatus && oldStatus == OrderStatus::Created) {
+        query.bindValue(":old_status", QVariant());
+    } else {
+        query.bindValue(":old_status", static_cast<int>(oldStatus));
+    }
+    query.bindValue(":new_status", static_cast<int>(newStatus));
+    query.bindValue(":comment", comment);
+
+    if (!query.exec()) {
+        qCritical() << "SQL Error (logStatusChange):" << query.lastError().text();
+        return OperationResult::Fail("Не вдалося записати історію змін: " + query.lastError().text());
+    }
+    return OperationResult::Ok();
+}
