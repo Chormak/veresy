@@ -116,6 +116,22 @@ QString OrderManager::sanitizeString(const QString& str) const {
         return cleanStr;
 }
 
+OperationResult OrderManager::startRepair(int id) {
+    return moveOrderToStatus(id, OrderStatus::InProgress);
+}
+
+OperationResult OrderManager::waitForParts(int id) {
+    return moveOrderToStatus(id, OrderStatus::WaitingParts);
+}
+
+OperationResult OrderManager::completeRepair(int id) {
+    return moveOrderToStatus(id, OrderStatus::Done);
+}
+
+OperationResult OrderManager::cancelRepair(int id) {
+    return moveOrderToStatus(id, OrderStatus::Cancelled);
+}
+
 OperationResult OrderManager::moveOrderToStatus(int id, OrderStatus targetStatus) {
     for (auto& order : m_orderCache) {
         if (order.id == id) {

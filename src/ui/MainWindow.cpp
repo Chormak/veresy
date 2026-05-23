@@ -121,9 +121,20 @@ void MainWindow::setupUi() {
   
   connect(m_view, &OrderTableView::statusChanged, this, [this](int id, int index){
     OrderStatus newStatus = static_cast<OrderStatus>(index);
-    OperationResult result = m_orderManager->moveOrderToStatus(id,newStatus);
+    OperationResult result;
+
+    switch (newStatus) {
+      case OrderStatus::InProgress: result = m_orderManager->startRepair(id); break;
+      case OrderStatus::WaitingParts: result = m_orderManager->waitForParts(id); break;
+      case OrderStatus::Done: result = m_orderManager->completeRepair(id); break;
+      case OrderStatus::Cancelled: result = m_orderManager->cancelRepair(id); break;
+      default:
+       result = OperationResult::Fail("Невідома дія");
+       break;
+    }
+
     if (!result.success) {
-      QMessageBox::critical(this, "Помилка", "Не вдалося оновити статус.");
+      QMessageBox::critical(this, "Помилка воркфлоу", result.errorMassage);
       reloadOrders();
     }
   });

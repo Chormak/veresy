@@ -31,9 +31,13 @@ public:
   void reloadFromRepository();
   std::vector<Order> getOrders() const;
   OperationResult updateOrder(const Order& order);
-  OperationResult moveOrderToStatus(int id, OrderStatus targetStatus);
   std::vector<OrderStatus> getAllowedActionsForOrder(int id) const;
   std::vector<HistoryRecord> getOrderHistory(int orderId) const;
+
+  OperationResult startRepair(int id);
+  OperationResult waitForParts(int id);
+  OperationResult completeRepair(int id);
+  OperationResult cancelRepair(int id);
 
   signals:
   void orderCreated();
@@ -46,6 +50,7 @@ private:
   std::vector<Order> m_orderCache;
   std::unique_ptr<OrderRepository> m_repository;
   QString sanitizeString(const QString& str) const;
+  OperationResult moveOrderToStatus(int id, OrderStatus targetStatus);
 };
 
 #endif
