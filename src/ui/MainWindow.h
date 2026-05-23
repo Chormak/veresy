@@ -25,6 +25,7 @@
 #include <QSortFilterProxyModel>
 #include <QLabel>
 #include <QListWidget>
+#include <QGroupBox>
 
 class MainWindow : public QMainWindow {
   Q_OBJECT
@@ -54,6 +55,13 @@ private:
   QListWidget *m_colWaitingParts;
   QListWidget *m_colDone;
   void updateWorkflowBoard();
+
+  QLabel *m_lblDetailId;
+  QLabel *m_lblDetailClient;
+  QLabel *m_lblDetailDevice;
+  QLabel *m_lblDetailIssue;
+  QLabel *m_lblDetailStatus;
+  QLabel *m_lblDetailDate;
 
 private slots:
   void onAddOrderClicked();

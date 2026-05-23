@@ -53,9 +53,31 @@ void MainWindow::setupUi() {
   m_view = new OrderTableView(this);
   contentLayout->addWidget(m_view, 3);
 
+  auto *detailGroupBox = new QGroupBox("Детальна інформація про замовлення", this);
+  auto *detailLayout = new QHBoxLayout(detailGroupBox);
+
+  auto *textDetailsLayout = new QFormLayout();
+  m_lblDetailId = new QLabel("-", this);
+  m_lblDetailClient = new QLabel("-", this);
+  m_lblDetailDevice = new QLabel("-", this);
+  m_lblDetailIssue = new QLabel("-", this);
+  m_lblDetailStatus = new QLabel("-", this);
+  m_lblDetailDate = new QLabel("-", this);
+
+  textDetailsLayout->addRow("Номер замовлення:", m_lblDetailId);
+  textDetailsLayout->addRow("Клієнт:", m_lblDetailClient);
+  textDetailsLayout->addRow("Пристрій:", m_lblDetailDevice);
+  textDetailsLayout->addRow("Опис проблеми:", m_lblDetailIssue);
+  textDetailsLayout->addRow("Поточний статус:", m_lblDetailStatus);
+  textDetailsLayout->addRow("Дата створення:", m_lblDetailDate);
+
+  detailLayout->addLayout(textDetailsLayout, 2);
+
   m_historyList = new QListWidget(this);
   m_historyList->addItem("Оберіть замовлення для перегляду історії");
   contentLayout->addWidget(m_historyList, 1);
+
+  contentLayout->addWidget(detailGroupBox, 1);
 
   layout->addLayout(contentLayout);
   setCentralWidget(centralWidget);
@@ -89,7 +111,6 @@ void MainWindow::setupUi() {
   boardLayout->addWidget(m_colDone);
 
   layout->addLayout(boardLayout);
-  setCentralWidget(centralWidget);
 
   statusBar()->addPermanentWidget(m_statusFilterLabel, 2);
   statusBar()->addPermanentWidget(m_statusActiveLabel, 1);
@@ -250,7 +271,15 @@ void MainWindow::onEditCurrentOrderRequested(){
 void MainWindow::onOrderSelectionChanged(const QModelIndex &currentProxyIndex, const QModelIndex &) {
   m_historyList->clear();
 
-  if (!currentProxyIndex.isValid()) return;
+  if (!currentProxyIndex.isValid()) {
+    m_lblDetailId->setText("-");
+    m_lblDetailClient->setText("-");
+    m_lblDetailDevice->setText("-");
+    m_lblDetailIssue->setText("-");
+    m_lblDetailStatus->setText("-");
+    m_lblDetailDate->setText("-");
+    return;
+  }
 
   QModelIndex originalIndex = m_proxyModel->mapToSource(currentProxyIndex);
   int row = originalIndex.row();
@@ -258,9 +287,16 @@ void MainWindow::onOrderSelectionChanged(const QModelIndex &currentProxyIndex, c
   auto orders = m_orderManager->getOrders();
   if (row >= orders.size()) return;
 
-  int orderId = orders[row].id;
+  const Order& order = orders[row];
 
-  auto history = m_orderManager->getOrderHistory(orderId);
+  m_lblDetailId->setText(QString("#%1").arg(order.id));
+  m_lblDetailClient->setText(order.clientName);
+  m_lblDetailDevice->setText(order.device);
+  m_lblDetailIssue->setText(order.issue);
+  m_lblDetailStatus->setText(statusToString(order.status));
+  m_lblDetailDate->setText(order.createdAt.toString("dd.MM.yyyy HH:mm:ss"));
+
+  auto history = m_orderManager->getOrderHistory(order.id);
 
   for (const auto& record : history) {
     QString timeStr = record.timestamp.toString("HH:mm");
