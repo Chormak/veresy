@@ -93,10 +93,10 @@ bool OrderRepository::updateOrder(const Order& order) {
     return true;
 }
 
-OperationResult OrderRepository::logStatusChange(int orderId, OrderStatus oldStatus, OrderStatus newStatus, const QString& comment) {
+OperationResult OrderRepository::logStatusChange(int orderId, OrderStatus oldStatus, OrderStatus newStatus, const QString& comment, const QString& performedBy) {
     QSqlQuery query;
-    query.prepare("INSERT INTO order_history (order_id, old_status, new_status, comment) "
-                  "VALUES (:order_id, :old_status, :new_status, :comment)");
+    query.prepare("INSERT INTO order_history (order_id, old_status, new_status, comment, performed_by) "
+                  "VALUES (:order_id, :old_status, :new_status, :comment, :performed_by)");
 
     query.bindValue(":order_id", orderId);
     if (oldStatus == newStatus && oldStatus == OrderStatus::Created) {
@@ -106,6 +106,7 @@ OperationResult OrderRepository::logStatusChange(int orderId, OrderStatus oldSta
     }
     query.bindValue(":new_status", static_cast<int>(newStatus));
     query.bindValue(":comment", comment);
+    query.bindValue(":performed_by", performedBy);
 
     if (!query.exec()) {
         qCritical() << "SQL Error (logStatusChange):" << query.lastError().text();
@@ -117,7 +118,7 @@ OperationResult OrderRepository::logStatusChange(int orderId, OrderStatus oldSta
 std::vector<HistoryRecord> OrderRepository::selectOrderHistory(int orderId) {
     std::vector<HistoryRecord> history;
     QSqlQuery query;
-    query.prepare("SELECT id, order_id, old_status, new_status, timestamp, comment "
+    query.prepare("SELECT id, order_id, old_status, new_status, timestamp, comment, performed_by "
                   "FROM order_history WHERE order_id = :order_id ORDER BY timestamp ASC");
     query.bindValue(":order_id", orderId);
 
@@ -130,6 +131,7 @@ std::vector<HistoryRecord> OrderRepository::selectOrderHistory(int orderId) {
             record.newStatus = static_cast<OrderStatus>(query.value(3).toInt());
             record.timestamp = query.value(4).toDateTime();
             record.comment = query.value(5).toString();
+            record.performed_by = query.value(6).toString();
             history.push_back(record);
         }
     } else {

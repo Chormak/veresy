@@ -57,6 +57,7 @@ bool Database::createTable() {
                        "new_status INTAEGER NOT NULL, "
                        "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, "
                        "comment TEXT, "
+                       "performed_by TEXT DEFAULT 'admin', "
                        "FOREIGN KEY(order_id) REFERENCES orders(id) ON DELETE CASCADE"
                        ");";
 

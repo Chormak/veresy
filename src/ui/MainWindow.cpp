@@ -311,8 +311,9 @@ void MainWindow::onOrderSelectionChanged(const QModelIndex &currentProxyIndex, c
 
   for (const auto& record : history) {
     QString timeStr = record.timestamp.toString("HH:mm");
-    QString logLine = QString("[%1] %2 > %3")
+    QString logLine = QString("[%1] [@%2] %3 > %4")
                       .arg(timeStr)
+                      .arg(record.performed_by)
                       .arg(statusToString(record.oldStatus))
                       .arg(statusToString(record.newStatus));
     if (!record.comment.isEmpty()) {

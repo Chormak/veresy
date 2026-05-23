@@ -131,6 +131,7 @@ struct HistoryRecord {
   OrderStatus newStatus;
   QDateTime timestamp;
   QString comment;
+  QString performed_by;
 };
 
 #endif
