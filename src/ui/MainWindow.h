@@ -49,6 +49,12 @@ private:
 
   QListWidget *m_historyList;
 
+  QListWidget *m_colCreated;
+  QListWidget *m_colInProgress;
+  QListWidget *m_colWaitingParts;
+  QListWidget *m_colDone;
+  void updateWorkflowBoard();
+
 private slots:
   void onAddOrderClicked();
   void onDeleteOrderClicked(int id);

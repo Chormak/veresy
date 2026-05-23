@@ -76,6 +76,21 @@ void MainWindow::setupUi() {
   m_statusActiveLabel = new QLabel(this);
   m_statusFilterLabel = new QLabel(this);
 
+  auto *boardLayout = new QHBoxLayout();
+
+  m_colCreated = new QListWidget(this);
+  m_colInProgress = new QListWidget(this);
+  m_colWaitingParts = new QListWidget(this);
+  m_colDone = new QListWidget(this);
+
+  boardLayout->addWidget(m_colCreated);
+  boardLayout->addWidget(m_colInProgress);
+  boardLayout->addWidget(m_colWaitingParts);
+  boardLayout->addWidget(m_colDone);
+
+  layout->addLayout(boardLayout);
+  setCentralWidget(centralWidget);
+
   statusBar()->addPermanentWidget(m_statusFilterLabel, 2);
   statusBar()->addPermanentWidget(m_statusActiveLabel, 1);
   statusBar()->addPermanentWidget(m_statusTotalLabel, 1);
@@ -170,6 +185,7 @@ void MainWindow::reloadOrders() {
     filterInfo += QString(" + Пошук: \"%1\"").arg(filterText);
   }
   m_statusFilterLabel->setText(filterInfo);
+  updateWorkflowBoard();
 }
 
 void MainWindow::onAddOrderClicked() {
@@ -256,6 +272,38 @@ void MainWindow::onOrderSelectionChanged(const QModelIndex &currentProxyIndex, c
       logLine += " (" + record.comment + ")";
     }
     m_historyList->addItem(logLine);
+  }
+}
+
+void MainWindow::updateWorkflowBoard() {
+  m_colCreated->clear();
+  m_colInProgress->clear();
+  m_colWaitingParts->clear();
+  m_colDone->clear();
+
+  auto orders = m_orderManager->getOrders();
+
+  for (const auto& order : orders) {
+    QString itemText = QString("#%1 | %2\nПроблема: %3")
+                       .arg(order.id)
+                       .arg(order.device)
+                       .arg(order.issue);
+    switch (order.status) {
+      case OrderStatus::Created:
+       m_colCreated->addItem(itemText);
+       break;
+      case OrderStatus::InProgress:
+       m_colInProgress->addItem(itemText);
+       break;
+      case OrderStatus::WaitingParts:
+       m_colWaitingParts->addItem(itemText);
+       break;
+      case OrderStatus::Done:
+       m_colDone->addItem(itemText);
+       break;
+      default:
+       break;
+    }
   }
 }
 
