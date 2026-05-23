@@ -49,8 +49,15 @@ void MainWindow::setupUi() {
   layout->addWidget(btnAdd);
   connect(btnAdd, &QPushButton::clicked, this, &MainWindow::onAddOrderClicked);
 
+  auto *contentLayout = new QVBoxLayout();
   m_view = new OrderTableView(this);
-  layout->addWidget(m_view);
+  contentLayout->addWidget(m_view, 3);
+
+  m_historyList = new QListWidget(this);
+  m_historyList->addItem("Оберіть замовлення для перегляду історії");
+  contentLayout->addWidget(m_historyList, 1);
+
+  layout->addLayout(contentLayout);
   setCentralWidget(centralWidget);
 
   m_proxyModel = new QSortFilterProxyModel(this);
@@ -77,8 +84,10 @@ void MainWindow::setupUi() {
   connect(m_statusFilterCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](){ this->reloadOrders(); });
   
   connect(m_view, &OrderTableView::statusChanged, this, [this](int id, int index){
-    if (!m_orderManager->changeStatus(id, static_cast<OrderStatus>(index))) {
-      QMessageBox::critical(this, "Помидка", "Не вдалося оновити статус.");
+    OrderStatus newStatus = static_cast<OrderStatus>(index);
+    OperationResult result = m_orderManager->moveOrderToStatus(id,newStatus);
+    if (!result.success) {
+      QMessageBox::critical(this, "Помилка", "Не вдалося оновити статус.");
       reloadOrders();
     }
   });
@@ -115,6 +124,9 @@ void MainWindow::setupUi() {
 
   connect(shortcutEnter, &QShortcut::activated, this, &MainWindow::onEditCurrentOrderRequested);
   connect(shortcutEnterNum, &QShortcut::activated, this, &MainWindow::onEditCurrentOrderRequested);
+
+  connect(m_view->selectionModel(), &QItemSelectionModel::currentChanged,
+          this, &MainWindow::onOrderSelectionChanged);
 }
 
 void MainWindow::reloadOrders() {
@@ -217,6 +229,34 @@ void MainWindow::onEditCurrentOrderRequested(){
   QModelIndex currentIndex = m_view->currentIndex();
   if (!currentIndex.isValid()) return;
   this->onRowDoubleClicked(currentIndex);
+}
+
+void MainWindow::onOrderSelectionChanged(const QModelIndex &currentProxyIndex, const QModelIndex &) {
+  m_historyList->clear();
+
+  if (!currentProxyIndex.isValid()) return;
+
+  QModelIndex originalIndex = m_proxyModel->mapToSource(currentProxyIndex);
+  int row = originalIndex.row();
+
+  auto orders = m_orderManager->getOrders();
+  if (row >= orders.size()) return;
+
+  int orderId = orders[row].id;
+
+  auto history = m_orderManager->getOrderHistory(orderId);
+
+  for (const auto& record : history) {
+    QString timeStr = record.timestamp.toString("HH:mm");
+    QString logLine = QString("[%1] %2 > %3")
+                      .arg(timeStr)
+                      .arg(statusToString(record.oldStatus))
+                      .arg(statusToString(record.newStatus));
+    if (!record.comment.isEmpty()) {
+      logLine += " (" + record.comment + ")";
+    }
+    m_historyList->addItem(logLine);
+  }
 }
 
 MainWindow::~MainWindow() {}

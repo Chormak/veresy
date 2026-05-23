@@ -28,6 +28,7 @@ public:
     std::vector<Order> selectAllOrders();
     bool updateOrder(const Order& order);
     OperationResult logStatusChange(int orderId, OrderStatus oldStatus, OrderStatus newStatus, const QString& comment = "");
+    std::vector<HistoryRecord> selectOrderHistory(int orderId);
 };
 
 #endif

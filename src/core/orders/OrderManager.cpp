@@ -149,3 +149,7 @@ std::vector<OrderStatus> OrderManager::getAllowedActionsForOrder(int id) const {
     }
     return {};
 }
+
+std::vector<HistoryRecord> OrderManager::getOrderHistory(int orderId) const {
+    return m_repository->selectOrderHistory(orderId);
+}

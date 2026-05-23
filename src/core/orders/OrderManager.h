@@ -33,6 +33,7 @@ public:
   OperationResult updateOrder(const Order& order);
   OperationResult moveOrderToStatus(int id, OrderStatus targetStatus);
   std::vector<OrderStatus> getAllowedActionsForOrder(int id) const;
+  std::vector<HistoryRecord> getOrderHistory(int orderId) const;
 
   signals:
   void orderCreated();

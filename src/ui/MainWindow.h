@@ -24,6 +24,7 @@
 #include <QComboBox>
 #include <QSortFilterProxyModel>
 #include <QLabel>
+#include <QListWidget>
 
 class MainWindow : public QMainWindow {
   Q_OBJECT
@@ -46,11 +47,14 @@ private:
   QLabel *m_statusActiveLabel;
   QLabel *m_statusFilterLabel;
 
+  QListWidget *m_historyList;
+
 private slots:
   void onAddOrderClicked();
   void onDeleteOrderClicked(int id);
   void onRowDoubleClicked(const QModelIndex &index);
   void onEditCurrentOrderRequested();
+  void onOrderSelectionChanged(const QModelIndex & current, const QModelIndex &previous);
 };
 
 #endif

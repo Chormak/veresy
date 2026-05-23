@@ -113,3 +113,27 @@ OperationResult OrderRepository::logStatusChange(int orderId, OrderStatus oldSta
     }
     return OperationResult::Ok();
 }
+
+std::vector<HistoryRecord> OrderRepository::selectOrderHistory(int orderId) {
+    std::vector<HistoryRecord> history;
+    QSqlQuery query;
+    query.prepare("SELECT id, order_id, old_status, new_status, timestamp, comment "
+                  "FROM order_history WHERE order_id = :order_id ORDER BY timestamp ASC");
+    query.bindValue(":order_id", orderId);
+
+    if (query.exec()) {
+        while (query.next()) {
+            HistoryRecord record;
+            record.id = query.value(0).toInt();
+            record.orderId = query.value(1).toInt();
+            record.oldStatus = query.value(2).isNull() ? OrderStatus::Created : static_cast<OrderStatus>(query.value(2).toInt());
+            record.newStatus = static_cast<OrderStatus>(query.value(3).toInt());
+            record.timestamp = query.value(4).toDateTime();
+            record.comment = query.value(5).toString();
+            history.push_back(record);
+        }
+    } else {
+        qCritical() << "SQL Error (selectHistory):" << query.lastError().text();
+    }
+    return history;
+}
