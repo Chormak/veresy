@@ -332,24 +332,35 @@ void MainWindow::updateWorkflowBoard() {
   auto orders = m_orderManager->getOrders();
 
   for (const auto& order : orders) {
-    QString itemText = QString("#%1 | %2\nПроблема: %3")
+    QString icon = statusToIcon(order.status);
+    QString itemText = QString("%1 #%2 | %3\nПроблема: %4")
+                       .arg(icon)
                        .arg(order.id)
                        .arg(order.device)
                        .arg(order.issue);
+    QListWidgetItem* item = new QListWidgetItem(itemText);
+
     switch (order.status) {
       case OrderStatus::Created:
-       m_colCreated->addItem(itemText);
+       m_colCreated->addItem(item);
        break;
       case OrderStatus::InProgress:
-       m_colInProgress->addItem(itemText);
+       m_colInProgress->addItem(item);
        break;
       case OrderStatus::WaitingParts:
-       m_colWaitingParts->addItem(itemText);
+       item->setForeground(getStatusColor(OrderStatus::WaitingParts));
+       {
+       QFont font = this->font();
+       font.setBold(true);
+       item->setFont(font);
+       }
+       m_colWaitingParts->addItem(item);
        break;
       case OrderStatus::Done:
-       m_colDone->addItem(itemText);
+       m_colDone->addItem(item);
        break;
       default:
+       delete item;
        break;
     }
   }

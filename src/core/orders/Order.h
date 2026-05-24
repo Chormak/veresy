@@ -74,7 +74,7 @@ inline QColor getStatusColor(OrderStatus status) {
     case OrderStatus::InProgress:
      return QColor("#FFC107");
     case OrderStatus::WaitingParts:
-     return QColor("#FD7E14");
+     return QColor("#DC3545");
     case OrderStatus::Done:
      return QColor("#28A745");
     case OrderStatus::Cancelled:
@@ -106,6 +106,17 @@ inline std::vector<OrderStatus> getNextAllowedStatuses(OrderStatus current) {
    break;
   }
   return allowed;
+}
+
+inline QString statusToIcon(OrderStatus status) {
+  switch (status) {
+    case OrderStatus::Created: return "🔵";
+    case OrderStatus::InProgress: return "🟡";
+    case OrderStatus::WaitingParts: return "⚠️";
+    case OrderStatus::Done: return "🟢";
+    case OrderStatus::Cancelled: return "⚫";
+    default : return "❓";
+  }
 }
 
 struct Order {

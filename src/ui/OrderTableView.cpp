@@ -42,16 +42,26 @@ void OrderTableView::updateData(const std::vector<Order>& orders, bool isSearchi
     const auto& order = orders[i];
 
     QComboBox* combo = new QComboBox();
-    combo->addItems({"Created", "In Progress", "Waiting Parts", "Done", "Cancelled"});
+    combo->addItem(statusToIcon(OrderStatus::Created) + " Created");
+    combo->addItem(statusToIcon(OrderStatus::InProgress) + " In Progress");
+    combo->addItem(statusToIcon(OrderStatus::WaitingParts) + " Waiting Parts");
+    combo->addItem(statusToIcon(OrderStatus::Done) + " Done");
+    combo->addItem(statusToIcon(OrderStatus::Cancelled) + " Cancelled");
+
     combo->setCurrentIndex(static_cast<int>(order.status));
     combo->setProperty("orderId", order.id);
+
+    combo->setItemData(2, getStatusColor(OrderStatus::WaitingParts), Qt::ForegroundRole);
     
     QColor statusColor = getStatusColor(order.status);
+    if (order.status == OrderStatus::WaitingParts) {
+      combo->setStyleSheet(QString(
+        "QComboBox { color: %1; font-weight: bold; border: 1px solid %1; background-color: #FFF5F5; }"
+      ).arg(statusColor.name()));
+    } else {
+      combo->setStyleSheet(QString("QComboBox { color: %1; }").arg(statusColor.name()));
+    }
 
-    QPalette pal = combo->palette();
-    pal.setColor(QPalette::Text, statusColor);
-    pal.setColor(QPalette::WindowText, statusColor);
-    combo->setStyleSheet(QString("QComboBox { color: %1; font-weight: bold; }").arg(statusColor.name()));
     connect(combo, QOverload<int>::of(&QComboBox::currentIndexChanged), [this, combo](int index){
       int id = combo->property("orderId").toInt();
       emit statusChanged(id, index);
