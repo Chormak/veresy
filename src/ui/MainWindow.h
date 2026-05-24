@@ -12,20 +12,14 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "OrderTableView.h"
-#include <QTableView>
-#include <QVBoxLayout>
 #include <memory>
 #include "../core/orders/OrderManager.h"
 #include "OrderDialog.h"
 #include <QLineEdit>
-#include "OrderTableModel.h"
 #include <QShortcut>
 #include <QComboBox>
-#include <QSortFilterProxyModel>
 #include <QLabel>
-#include <QListWidget>
-#include <QGroupBox>
+#include "orders/OrdersView.h"
 
 class MainWindow : public QMainWindow {
   Q_OBJECT
@@ -38,37 +32,21 @@ private:
   void setupUi();
   void reloadOrders();
 
-  QComboBox *m_statusFilterCombo;
   std::unique_ptr<OrderManager> m_orderManager;
+
   QLineEdit *m_searchEdit;
-  OrderTableView *m_view;
-  QSortFilterProxyModel *m_proxyModel;
+  QComboBox *m_statusFilterCombo;
+
+  OrdersView *m_ordersView;
 
   QLabel *m_statusTotalLabel;
   QLabel *m_statusActiveLabel;
   QLabel *m_statusFilterLabel;
-
-  QListWidget *m_historyList;
-
-  QListWidget *m_colCreated;
-  QListWidget *m_colInProgress;
-  QListWidget *m_colWaitingParts;
-  QListWidget *m_colDone;
-  void updateWorkflowBoard();
-
-  QLabel *m_lblDetailId;
-  QLabel *m_lblDetailClient;
-  QLabel *m_lblDetailDevice;
-  QLabel *m_lblDetailIssue;
-  QLabel *m_lblDetailStatus;
-  QLabel *m_lblDetailDate;
-
 private slots:
   void onAddOrderClicked();
   void onDeleteOrderClicked(int id);
-  void onRowDoubleClicked(const QModelIndex &index);
+  void onRowDoubleClicked(const QModelIndex &proxyIndex);
   void onEditCurrentOrderRequested();
-  void onOrderSelectionChanged(const QModelIndex & current, const QModelIndex &previous);
 };
 
 #endif
