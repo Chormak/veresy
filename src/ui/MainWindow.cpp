@@ -27,12 +27,8 @@ void MainWindow::setupUi() {
   auto *centralWidget = new QWidget(this);
   auto *layout = new QVBoxLayout(centralWidget);
 
-  m_filtersPanel = new FiltersPanel(this);
-  layout->addWidget(m_filtersPanel);
-
-  auto *btnAdd = new QPushButton("Створити замовлення", this);
-  layout->addWidget(btnAdd);
-  connect(btnAdd, &QPushButton::clicked, this, &MainWindow::onAddOrderClicked);
+  m_toolbar = new AppToolbar(this);
+  layout->addWidget(m_toolbar);
 
   m_ordersView = new OrdersView(this);
   layout->addWidget(m_ordersView);
@@ -45,7 +41,7 @@ void MainWindow::setupUi() {
   statusBar()->addPermanentWidget(m_statusActiveLabel, 1);
   statusBar()->addPermanentWidget(m_statusTotalLabel, 1);
 
-  connect(m_filtersPanel, &FiltersPanel::filtersChanged, this, &MainWindow::reloadOrders);
+  connect(m_toolbar, &AppToolbar::filtersChanged, this, &MainWindow::reloadOrders);
   connect(m_orderManager.get(), &OrderManager::ordersReloaded, this, &MainWindow::reloadOrders);
 
   connect(m_ordersView, &OrdersView::statusChanged, this, [this](int id, int index){
@@ -64,6 +60,9 @@ void MainWindow::setupUi() {
     }
   });
 
+  connect(m_toolbar, &AppToolbar::addOrderRequested, this, &MainWindow::onAddOrderClicked);
+  connect(m_toolbar, &AppToolbar::filtersChanged, this, &MainWindow::reloadOrders);
+
   connect(m_ordersView, &OrdersView::deleteRequested, this, &MainWindow::onDeleteOrderClicked);
   connect(m_ordersView, &OrdersView::doubleClicked, this, &MainWindow::onRowDoubleClicked);
 
@@ -76,7 +75,7 @@ void MainWindow::setupUi() {
 
   QShortcut *shortcutSearch = new QShortcut(QKeySequence("Ctrl+F"), this);
   connect(shortcutSearch, &QShortcut::activated, this, [this]() {
-    m_filtersPanel->focusSearch();
+    m_toolbar->focusSearch();
   });
 
   QShortcut *shortcutDelete = new QShortcut(QKeySequence(Qt::Key_Delete), this);
@@ -102,8 +101,8 @@ void MainWindow::reloadOrders() {
   auto allOrders = m_orderManager->getOrders();
   std::vector<Order> filteredOrders;
 
-  QString filterText = m_filtersPanel->filterText();
-  int filterMode = m_filtersPanel->filterMode();
+  QString filterText = m_toolbar->filterText();
+  int filterMode = m_toolbar->filterMode();
   bool isFilteringActive = !filterText.isEmpty() || filterMode != 0;
 
   int totalCount = allOrders.size();
@@ -148,7 +147,7 @@ void MainWindow::onAddOrderClicked() {
     OperationResult result = m_orderManager->addOrder(dialog.getClientName(), dialog.getDevice(), dialog.getIssue());
     if (result.success) {
       QMessageBox::information(this, "Успіх", "Замовлення успішно додано!");
-      m_filtersPanel->focusSearch();
+      m_toolbar->focusSearch();
     } else {
       QMessageBox::warning(this, "Помилка", result.errorMassage);
     }

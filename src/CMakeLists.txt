@@ -30,6 +30,8 @@ ui/filters/FiltersPanel.h
 ui/filters/FiltersPanel.cpp
 ui/orders/OrderDetailsView.h
 ui/orders/OrderDetailsView.cpp
+ui/common/AppToolbar.h
+ui/common/AppToolbar.cpp
 )
 
 target_link_libraries(veresy PRIVATE Qt6::Widgets Qt6::Sql)

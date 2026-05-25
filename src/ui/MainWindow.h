@@ -21,6 +21,7 @@
 #include <QLabel>
 #include "orders/OrdersView.h"
 #include "filters/FiltersPanel.h"
+#include "common/AppToolbar.h"
 
 class MainWindow : public QMainWindow {
   Q_OBJECT
@@ -35,7 +36,7 @@ private:
 
   std::unique_ptr<OrderManager> m_orderManager;
 
-  FiltersPanel *m_filtersPanel;
+  AppToolbar *m_toolbar;
 
   OrdersView *m_ordersView;
 
