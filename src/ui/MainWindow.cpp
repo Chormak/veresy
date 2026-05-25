@@ -13,6 +13,10 @@
 #include <QTimer>
 #include <QStatusBar>
 
+#include "screens/AnalyticsScreen.h"
+#include "screens/FinanceScreen.h"
+#include "screens/InventoryScreen.h"
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
   setWindowTitle("veresy");
   resize(800, 600);
@@ -27,11 +31,34 @@ void MainWindow::setupUi() {
   auto *centralWidget = new QWidget(this);
   auto *layout = new QVBoxLayout(centralWidget);
 
+  m_navigationBar = new QTabBar(this);
+  m_navigationBar->addTab("Замовлення");
+  m_navigationBar->addTab("Склад");
+  m_navigationBar->addTab("Аналітика");
+  m_navigationBar->addTab("Фінанси");
+  layout->addWidget(m_navigationBar);
+
+  m_screenStack = new QStackedWidget(this);
+  layout->addWidget(m_screenStack);
+  setCentralWidget(centralWidget);
+
+  auto *ordersScreenWidget = new QWidget(this);
+  auto *ordersScreenLayout = new QVBoxLayout(ordersScreenWidget);
+  ordersScreenLayout->setContentsMargins(0, 0, 0, 0);
+
   m_toolbar = new AppToolbar(this);
-  layout->addWidget(m_toolbar);
+  ordersScreenLayout->addWidget(m_toolbar);
 
   m_ordersView = new OrdersView(this);
-  layout->addWidget(m_ordersView);
+  ordersScreenLayout->addWidget(m_ordersView);
+
+  m_screenStack->addWidget(ordersScreenWidget);
+
+  m_screenStack->addWidget(new InventoryScreen(this));
+  m_screenStack->addWidget(new AnalyticsScreen(this));
+  m_screenStack->addWidget(new FinanceScreen(this));
+
+  
   setCentralWidget(centralWidget);
 
   m_statusTotalLabel = new QLabel(this);
@@ -40,6 +67,8 @@ void MainWindow::setupUi() {
   statusBar()->addPermanentWidget(m_statusFilterLabel, 2);
   statusBar()->addPermanentWidget(m_statusActiveLabel, 1);
   statusBar()->addPermanentWidget(m_statusTotalLabel, 1);
+
+  connect(m_navigationBar, &QTabBar::currentChanged, m_screenStack, &QStackedWidget::setCurrentIndex);
 
   connect(m_toolbar, &AppToolbar::filtersChanged, this, &MainWindow::reloadOrders);
   connect(m_orderManager.get(), &OrderManager::ordersReloaded, this, &MainWindow::reloadOrders);

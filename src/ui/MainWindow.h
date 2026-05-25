@@ -22,6 +22,8 @@
 #include "orders/OrdersView.h"
 #include "filters/FiltersPanel.h"
 #include "common/AppToolbar.h"
+#include <QStackedWidget>
+#include <QTabBar>
 
 class MainWindow : public QMainWindow {
   Q_OBJECT
@@ -43,6 +45,9 @@ private:
   QLabel *m_statusTotalLabel;
   QLabel *m_statusActiveLabel;
   QLabel *m_statusFilterLabel;
+
+  QStackedWidget *m_screenStack;
+  QTabBar *m_navigationBar;
 private slots:
   void onAddOrderClicked();
   void onDeleteOrderClicked(int id);
