@@ -20,6 +20,7 @@
 #include <QComboBox>
 #include <QLabel>
 #include "orders/OrdersView.h"
+#include "filters/FiltersPanel.h"
 
 class MainWindow : public QMainWindow {
   Q_OBJECT
@@ -34,8 +35,7 @@ private:
 
   std::unique_ptr<OrderManager> m_orderManager;
 
-  QLineEdit *m_searchEdit;
-  QComboBox *m_statusFilterCombo;
+  FiltersPanel *m_filtersPanel;
 
   OrdersView *m_ordersView;
 

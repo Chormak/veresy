@@ -26,20 +26,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 void MainWindow::setupUi() {
   auto *centralWidget = new QWidget(this);
   auto *layout = new QVBoxLayout(centralWidget);
-  auto *topLayout = new QHBoxLayout();
 
-  m_searchEdit = new QLineEdit(this);
-  m_searchEdit->setPlaceholderText("Пошук за клієнтом або пристроєм...");
-  topLayout->addWidget(m_searchEdit, 3);
-  
-  m_statusFilterCombo = new QComboBox(this);
-  m_statusFilterCombo->addItems({
-    "Всі замовлення",
-    "Тільки активні",
-    "Тільки завершені"
-  });
-  topLayout->addWidget(m_statusFilterCombo, 1);
-  layout->addLayout(topLayout);
+  m_filtersPanel = new FiltersPanel(this);
+  layout->addWidget(m_filtersPanel);
 
   auto *btnAdd = new QPushButton("Створити замовлення", this);
   layout->addWidget(btnAdd);
@@ -56,9 +45,8 @@ void MainWindow::setupUi() {
   statusBar()->addPermanentWidget(m_statusActiveLabel, 1);
   statusBar()->addPermanentWidget(m_statusTotalLabel, 1);
 
-  connect(m_searchEdit, &QLineEdit::textChanged, this, [this](){ this->reloadOrders(); });
-  connect(m_statusFilterCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](){ this->reloadOrders(); });
-  connect(m_orderManager.get(), &OrderManager::ordersReloaded, this, [this]() { this->reloadOrders(); });
+  connect(m_filtersPanel, &FiltersPanel::filtersChanged, this, &MainWindow::reloadOrders);
+  connect(m_orderManager.get(), &OrderManager::ordersReloaded, this, &MainWindow::reloadOrders);
 
   connect(m_ordersView, &OrdersView::statusChanged, this, [this](int id, int index){
     OrderStatus newStatus = static_cast<OrderStatus>(index);
@@ -87,8 +75,8 @@ void MainWindow::setupUi() {
   connect(shortcutNew, &QShortcut::activated, this, &MainWindow::onAddOrderClicked);
 
   QShortcut *shortcutSearch = new QShortcut(QKeySequence("Ctrl+F"), this);
-  connect(shortcutSearch, &QShortcut::activated, [this]() {
-    m_searchEdit->setFocus(); m_searchEdit->selectAll();
+  connect(shortcutSearch, &QShortcut::activated, this, [this]() {
+    m_filtersPanel->focusSearch();
   });
 
   QShortcut *shortcutDelete = new QShortcut(QKeySequence(Qt::Key_Delete), this);
@@ -114,9 +102,8 @@ void MainWindow::reloadOrders() {
   auto allOrders = m_orderManager->getOrders();
   std::vector<Order> filteredOrders;
 
-  QString filterText = m_searchEdit->text();
-  int filterMode = m_statusFilterCombo->currentIndex();
-
+  QString filterText = m_filtersPanel->filterText();
+  int filterMode = m_filtersPanel->filterMode();
   bool isFilteringActive = !filterText.isEmpty() || filterMode != 0;
 
   int totalCount = allOrders.size();
@@ -130,6 +117,7 @@ void MainWindow::reloadOrders() {
                          order.clientName.contains(filterText, Qt::CaseInsensitive) ||
                          order.device.contains(filterText, Qt::CaseInsensitive);
     if (!matchesSearch) continue;
+
     bool matchesStatus = true;
     if (filterMode == 1) {
       matchesStatus = (order.status != OrderStatus::Done && order.status != OrderStatus::Cancelled);
@@ -146,12 +134,12 @@ void MainWindow::reloadOrders() {
   m_statusTotalLabel->setText(QString("Всього замовлент: %1").arg(totalCount));
   m_statusActiveLabel->setText(QString("Активні ремонти: %1").arg(activeCount));
 
-  QString filterInfo = "Фільтр: " + m_statusFilterCombo->currentText();
+  QString filterName = (filterMode == 1) ? "Тільки активні" : (filterMode == 2) ? "Тільки завершені" : "Всі замовлення";
+  QString filterInfo = "Фільтр: " + filterName;
   if (!filterText.isEmpty()) {
     filterInfo += QString(" + Пошук: \"%1\"").arg(filterText);
   }
   m_statusFilterLabel->setText(filterInfo);
-  //updateWorkflowBoard();
 }
 
 void MainWindow::onAddOrderClicked() {
@@ -160,7 +148,7 @@ void MainWindow::onAddOrderClicked() {
     OperationResult result = m_orderManager->addOrder(dialog.getClientName(), dialog.getDevice(), dialog.getIssue());
     if (result.success) {
       QMessageBox::information(this, "Успіх", "Замовлення успішно додано!");
-      m_searchEdit->setFocus();
+      m_filtersPanel->focusSearch();
     } else {
       QMessageBox::warning(this, "Помилка", result.errorMassage);
     }
@@ -207,7 +195,6 @@ void MainWindow::onRowDoubleClicked(const QModelIndex &proxyIndex) {
 }
 
 void MainWindow::onEditCurrentOrderRequested(){
-  if (m_searchEdit->hasFocus()) return;
   QModelIndex currentIndex = m_ordersView->tableView()->currentIndex();
   if (!currentIndex.isValid()) return;
   this->onRowDoubleClicked(currentIndex);

@@ -26,6 +26,8 @@ ui/OrderTableView.h
 ui/OrderTableView.cpp
 ui/orders/OrdersView.h
 ui/orders/OrdersView.cpp
+ui/filters/FiltersPanel.h
+ui/filters/FiltersPanel.cpp
 )
 
 target_link_libraries(veresy PRIVATE Qt6::Widgets Qt6::Sql)
