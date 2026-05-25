@@ -12,15 +12,12 @@
 #define ORDERSVIEW_H
 
 #include <QWidget>
-#include <QListWidget>
-#include <QGroupBox>
-#include <QLabel>
-#include <QFormLayout>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
 #include <QSortFilterProxyModel>
 #include "../OrderTableView.h"
 #include "../../core/orders/Order.h"
+#include "OrderDetailsView.h"
+#include <vector>
+#include <QListWidget>
 
 class OrdersView : public QWidget {
   Q_OBJECT
@@ -36,6 +33,7 @@ signals:
   void statusChanged(int id, int index);
   void deleteRequested(int id);
   void doubleClicked(const QModelIndex &index);
+  void historyRequested(int orderId, std::vector<HistoryRecord>& outHistory);
 
 private slots:
   void onOrderSelectionChanged(const QModelIndex &current, const QModelIndex &previous);
@@ -46,24 +44,14 @@ private:
 
   OrderTableView *m_view;
   QSortFilterProxyModel *m_proxyModel;
+  OrderDetailsView *m_detailsView = nullptr;
 
-  QLabel *m_lblDetailId;
-  QLabel *m_lblDetailClient;
-  QLabel *m_lblDetailDevice;
-  QLabel *m_lblDetailIssue;
-  QLabel *m_lblDetailStatus;
-  QLabel *m_lblDetailDate;
-  QListWidget *m_historyList;
-
-  QListWidget *m_colCreated;
-  QListWidget *m_colInProgress;
-  QListWidget *m_colWaitingParts;
-  QListWidget *m_colDone;
+  QListWidget *m_colCreated = nullptr;
+  QListWidget *m_colInProgress = nullptr;
+  QListWidget *m_colWaitingParts = nullptr;
+  QListWidget *m_colDone = nullptr;
 
   std::vector<Order> m_currentFilteredOrders;
-
-signals:
-  void historyRequested(int orderId, std::vector<HistoryRecord>& outHistory);
 };
 
 #endif
