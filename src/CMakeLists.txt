@@ -35,6 +35,8 @@ ui/common/AppToolbar.cpp
 ui/screens/InventoryScreen.h
 ui/screens/FinanceScreen.h
 ui/screens/AnalyticsScreen.h
+utils/Logger.h
+utils/Logger.cpp
 )
 
 target_link_libraries(veresy PRIVATE Qt6::Widgets Qt6::Sql)

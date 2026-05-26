@@ -9,8 +9,10 @@
 */
 
 #include "app/Application.h"
+#include "utils/Logger.h"
 
 int main (int argc, char *argv[]) {
+  Logger::init();
   Application veresyApp(argc, argv);
   return veresyApp.exec();
 
