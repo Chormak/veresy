@@ -128,44 +128,24 @@ void MainWindow::setupUi() {
 
 void MainWindow::reloadOrders() {
   auto allOrders = m_orderManager->getOrders();
-  std::vector<Order> filteredOrders;
 
-  QString filterText = m_toolbar->filterText();
+  QString searchText = m_toolbar->filterText();
   int filterMode = m_toolbar->filterMode();
-  bool isFilteringActive = !filterText.isEmpty() || filterMode != 0;
+  bool isFilteringActive = !searchText.isEmpty() || filterMode != 0;
 
-  int totalCount = allOrders.size();
-  int activeCount = 0;
+  auto filteredOrders = m_orderManager->getFilteredOrders(searchText, filterMode);
 
-  for (const auto& order : allOrders) {
-    if (order.status != OrderStatus:: Done && order.status != OrderStatus::Cancelled) {
-      activeCount++;
-    }
-    bool matchesSearch = filterText.isEmpty() ||
-                         order.clientName.contains(filterText, Qt::CaseInsensitive) ||
-                         order.device.contains(filterText, Qt::CaseInsensitive);
-    if (!matchesSearch) continue;
-
-    bool matchesStatus = true;
-    if (filterMode == 1) {
-      matchesStatus = (order.status != OrderStatus::Done && order.status != OrderStatus::Cancelled);
-    }
-    else if (filterMode == 2) {
-      matchesStatus = (order.status == OrderStatus::Done || order.status == OrderStatus::Cancelled);
-    }
-    if (matchesStatus) {
-      filteredOrders.push_back(order);
-    }
-  }
   m_ordersView->updateData(filteredOrders, isFilteringActive, allOrders);
 
-  m_statusTotalLabel->setText(QString("Всього замовлент: %1").arg(totalCount));
-  m_statusActiveLabel->setText(QString("Активні ремонти: %1").arg(activeCount));
+  m_statusTotalLabel->setText(QString("Всього замовлент: %1").arg(allOrders.size()));
+  m_statusActiveLabel->setText(QString("Активні ремонти: %1").arg(
+    m_orderManager->getFilteredOrders("", 1).size()
+  ));
 
   QString filterName = (filterMode == 1) ? "Тільки активні" : (filterMode == 2) ? "Тільки завершені" : "Всі замовлення";
   QString filterInfo = "Фільтр: " + filterName;
-  if (!filterText.isEmpty()) {
-    filterInfo += QString(" + Пошук: \"%1\"").arg(filterText);
+  if (!searchText.isEmpty()) {
+    filterInfo += QString(" + Пошук: \"%1\"").arg(searchText);
   }
   m_statusFilterLabel->setText(filterInfo);
 }

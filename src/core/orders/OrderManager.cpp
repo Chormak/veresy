@@ -169,3 +169,27 @@ std::vector<OrderStatus> OrderManager::getAllowedActionsForOrder(int id) const {
 std::vector<HistoryRecord> OrderManager::getOrderHistory(int orderId) const {
     return m_repository->selectOrderHistory(orderId);
 }
+
+std::vector<Order> OrderManager::getFilteredOrders(const QString& searchText, int filterMode) const {
+    std::vector<Order> filtered;
+
+    for (const auto& order : m_orderCache) {
+        bool matchesSearch = searchText.isEmpty() ||
+                             order.clientName.contains(searchText, Qt::CaseInsensitive) ||
+                             order.device.contains(searchText, Qt::CaseInsensitive);
+        if (!matchesSearch) continue;
+
+        bool matchesStatus = true;
+        if (filterMode == 1) {
+            matchesStatus = (order.status != OrderStatus::Done && order.status != OrderStatus::Cancelled);
+        }
+        else if (filterMode == 2) {
+            matchesStatus = (order.status == OrderStatus::Done || order.status == OrderStatus::Cancelled);
+        }
+
+        if (matchesStatus) {
+            filtered.push_back(order);
+        }
+    }
+    return filtered;
+}

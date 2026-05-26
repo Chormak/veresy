@@ -33,6 +33,7 @@ public:
   OperationResult updateOrder(const Order& order);
   std::vector<OrderStatus> getAllowedActionsForOrder(int id) const;
   std::vector<HistoryRecord> getOrderHistory(int orderId) const;
+  std::vector<Order> getFilteredOrders(const QString& searchText, int filterMode) const;
 
   OperationResult startRepair(int id);
   OperationResult waitForParts(int id);
