@@ -48,6 +48,7 @@ bool OrderManager::changeStatus(int id, OrderStatus newStatus) {
 OperationResult OrderManager::deleteOrder(int id) {
     OperationResult ress = m_repository->deleteOrder(id);
     if (ress.success) {
+        qInfo() << "USER ACTION: Видалено замовлення №" << id << "з бази даних";
         emit orderDeleted();
         reloadFromRepository();
     }
@@ -70,9 +71,12 @@ OperationResult OrderManager::addOrder(const QString& name, const QString& dev, 
     
     if (res.success) {
         auto currentOrders = m_repository->selectAllOrders();
-        if (!currentOrders.empty()) {
-            m_repository->logStatusChange(currentOrders.front().id, OrderStatus::Created, OrderStatus::Created, "Замовлення зареєстровано в системі");
-        }
+        int newId = currentOrders.empty() ? 0 : currentOrders.front().id;
+
+        qInfo() << "USER ACTION: Створено нове замовлення №" << newId
+                << "| Клієнт:" << cleanName << "| Пристрій:" << cleanDevice;
+
+        m_repository->logStatusChange(newId, OrderStatus::Created, OrderStatus::Created, "Замовлення зареєстровано в системі");
         emit orderCreated();
         reloadFromRepository();
         return OperationResult::Ok();
@@ -103,6 +107,9 @@ OperationResult OrderManager::updateOrder(const Order& order) {
 
     bool success = m_repository->updateOrder(cleanOrder);
     if (success) {
+        qInfo() << "USER ACTION: Відредаговано картку замовлення №" << cleanOrder.id
+                << "| Нові дані -> Клієнт:" << cleanOrder.clientName
+                << "| Пристрій:" << cleanOrder.device;
         emit orderUpdated();
         reloadFromRepository();
         return OperationResult::Ok();
@@ -146,6 +153,9 @@ OperationResult OrderManager::moveOrderToStatus(int id, OrderStatus targetStatus
             OperationResult res = updateOrder(order);
 
             if (res.success) {
+                qInfo() << "USER ACTION: Зміна статусу замовлення №" << id
+                        << "| З етапу:" << statusToString(oldStatus)
+                        << "-> На етап:" << statusToString(targetStatus);
                 QString comment = QString("Статус змінено з %1 на %2")
                                    .arg(statusToString(oldStatus))
                                    .arg(statusToString(targetStatus));
