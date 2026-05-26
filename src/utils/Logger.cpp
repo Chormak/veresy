@@ -12,6 +12,9 @@
 #include <QDateTime>
 #include <QFileInfo>
 #include <iostream>
+#include <QDir>
+#include <QFile>
+#include <QTextStream>
 
 void qtMessageOutput(QtMsgType type, const QMessageLogContext& context, const QString& msg) {
     Logger::Level level = Logger::Level::Info;
@@ -37,17 +40,35 @@ void Logger::log(Level level, const QString& message, const QMessageLogContext& 
     QString fileName = context.file ? QFileInfo(context.file).fileName() : "UnknownFile";
     int line = context.line;
 
-    QString logLine = QString("[%1] [%2] [%3:%4] %5")
-                      .arg(timestamp)
-                      .arg(levelToString(level))
-                      .arg(fileName)
-                      .arg(line)
-                      .arg(message);
+    QString consoleLine = QString("[%1] [%2] [%3:%4] %5")
+                          .arg(timestamp)
+                          .arg(levelToString(level))
+                          .arg(fileName)
+                          .arg(line)
+                          .arg(message);
+
+    QString fileLine = QString("[%1] [%2] %3")
+                       .arg(timestamp)
+                       .arg(levelToString(level))
+                       .arg(message);
 
     if (level == Level::Error) {
-        std::cerr << logLine.toStdString() << std::endl;
+        std::cerr << consoleLine.toStdString() << std::endl;
     } else {
-        std::cout << logLine.toStdString() << std::endl;
+        std::cout << consoleLine.toStdString() << std::endl;
+    }
+
+    QDir dir;
+    if (!dir.exists("logs")) {
+        dir.mkdir("logs");
+    }
+
+    QFile logFile("logs/veresy.log");
+    if (logFile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
+        QTextStream stream(&logFile);
+        stream.setEncoding(QStringConverter::Utf8);
+        stream << fileLine << "\n";
+        logFile.close();
     }
 }
 
