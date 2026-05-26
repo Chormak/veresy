@@ -22,7 +22,8 @@ OperationResult OrderRepository::insertOrder(const Order& order) {
     query.bindValue(":status", static_cast<int>(order.status));
 
     if (!query.exec()) {
-        qCritical() << "SQL Error (insert):" << query.lastError().text();
+        qCritical() << "SQL Error (insertOrder failed) | SQL:" << query.lastQuery()
+                    << "| Reason:" << query.lastError().text();
         return OperationResult::Fail("Помилка бази даних: " + query.lastError().text());
     }
     return OperationResult::Ok();
@@ -49,7 +50,8 @@ OperationResult OrderRepository::deleteOrder(int id) {
     query.bindValue(":id", id);
 
     if (!query.exec()) {
-        qCritical() << "SQL Error (delete):" << query.lastError().text();
+        qCritical() << "SQL Error (deleteOrder failed) | Target ID:" << id
+                << "| Reason:" << query.lastError().text();
         return OperationResult::Fail("Помилка бази даних: " + query.lastError().text());
     }
     return OperationResult::Ok();
@@ -59,6 +61,11 @@ std::vector<Order> OrderRepository::selectAllOrders() {
     std::vector<Order> orders;
     QSqlQuery query("SELECT id, client_name, device, issue, status, created_at "
                     "FROM orders ORDER BY created_at DESC");
+
+    if (query.lastError().isValid()) {
+        qCritical() << "SQL Error (selectAllOrders failed) | Reason:" << query.lastError().text();
+        return orders;
+    }
 
     while (query.next()) {
         Order order;
@@ -87,7 +94,8 @@ bool OrderRepository::updateOrder(const Order& order) {
     query.bindValue(":id", order.id);
 
     if (!query.exec()) {
-        qCritical() << "SQL Error (Update Order):" << query.lastError().text();
+        qCritical() << "SQL Error (updateOrder failed) | ID:" << order.id
+                    << "| Reason:" << query.lastError().text();
         return false;
     }
     return true;

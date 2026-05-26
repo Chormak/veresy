@@ -21,7 +21,7 @@ Database::~Database() {
 
 bool Database::open() {
   if (!m_db.open()) {
-    qDebug() << "Помилка підключення до БД:" << m_db.lastError().text();
+    qCritical() << "Помилка підключення до БД:" << m_db.lastError().text();
     return false;
   }
   qDebug() << "БД успішно відкрита за шляхом:" << m_path;
