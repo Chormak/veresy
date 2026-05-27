@@ -10,10 +10,18 @@
 
 #include "app/Application.h"
 #include "utils/Logger.h"
+#include "QApplication"
 
 int main (int argc, char *argv[]) {
   Logger::init();
+
+  qInfo() <<"==================================================";
+  qInfo() <<"APPLICATION START: Запуск системи Veresy...";
+  qInfo() <<"Режим збірки: v0.9.0-alpha";
+  qInfo() <<"STARTUP: Завантаження графічних модулів інтерфейсу...";
   Application veresyApp(argc, argv);
+  qInfo() <<"=================================================";
+
   return veresyApp.exec();
 
 }
