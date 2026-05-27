@@ -89,6 +89,21 @@ void MainWindow::setupUi() {
     }
   });
 
+  connect(m_ordersView, &OrdersView::orderDroppedOnBoard, this, [this](int id, OrderStatus targetStatus) {
+    OperationResult result;
+    switch (targetStatus) {
+          case OrderStatus::InProgress: result = m_orderManager->startRepair(id); break;
+          case OrderStatus::WaitingParts: result = m_orderManager->waitForParts(id); break;
+          case OrderStatus::Done: result = m_orderManager->completeRepair(id); break;
+          case OrderStatus::Cancelled: result = m_orderManager->cancelRepair(id); break;
+          default: result = OperationResult::Fail("Дія не підтримується конвеєром."); break;
+    }
+    if (!result.success) {
+          QMessageBox::critical(this, "Помилка воркфлоу", result.errorMassage);
+    }
+    reloadOrders();
+  });
+
   connect(m_toolbar, &AppToolbar::addOrderRequested, this, &MainWindow::onAddOrderClicked);
   connect(m_toolbar, &AppToolbar::filtersChanged, this, &MainWindow::reloadOrders);
 

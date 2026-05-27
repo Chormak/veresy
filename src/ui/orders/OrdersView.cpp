@@ -37,10 +37,18 @@ void OrdersView::setupUi() {
   m_view->sortByColumn(0, Qt::DescendingOrder);
 
   auto *boardLayout = new QHBoxLayout();
-  m_colCreated = new QListWidget(this);
-  m_colInProgress = new QListWidget(this);
-  m_colWaitingParts = new QListWidget(this);
-  m_colDone = new QListWidget(this);
+  m_colCreated = new WorkflowListWidget(OrderStatus::Created, this);
+  m_colInProgress = new WorkflowListWidget(OrderStatus::InProgress, this);
+  m_colWaitingParts = new WorkflowListWidget(OrderStatus::WaitingParts, this);
+  m_colDone = new WorkflowListWidget(OrderStatus::Done, this);
+
+  auto lambdaBridge = [this](int id, OrderStatus stat) {
+    emit orderDroppedOnBoard(id, stat);
+  };
+  connect(m_colCreated, &WorkflowListWidget::orderDropped, this, lambdaBridge);
+  connect(m_colInProgress, &WorkflowListWidget::orderDropped, this, lambdaBridge);
+  connect(m_colWaitingParts, &WorkflowListWidget::orderDropped, this, lambdaBridge);
+  connect(m_colDone, &WorkflowListWidget::orderDropped, this, lambdaBridge);
 
   boardLayout->addWidget(m_colCreated);
   boardLayout->addWidget(m_colInProgress);
@@ -70,7 +78,9 @@ void OrdersView::updateWorkflowBoard(const std::vector<Order>& allOrders) {
     for (const auto& order : allOrders) {
         QString icon = statusToIcon(order.status);
         QString itemText = QString("%1 #%2 | %3\nПроблема: %4").arg(icon).arg(order.id).arg(order.device).arg(order.issue);
-        auto *item = new QListWidgetItem(itemText);
+
+        QListWidgetItem* item = new QListWidgetItem(itemText);
+        item->setData(Qt::UserRole, order.id);
 
         switch (order.status) {
             case OrderStatus::Created: m_colCreated->addItem(item); break;

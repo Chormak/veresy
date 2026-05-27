@@ -17,7 +17,8 @@
 #include "../../core/orders/Order.h"
 #include "OrderDetailsView.h"
 #include <vector>
-#include <QListWidget>
+//#include <QListWidget>
+#include "WorkflowListWidget.h"
 
 class OrdersView : public QWidget {
   Q_OBJECT
@@ -34,6 +35,7 @@ signals:
   void deleteRequested(int id);
   void doubleClicked(const QModelIndex &index);
   void historyRequested(int orderId, std::vector<HistoryRecord>& outHistory);
+  void orderDroppedOnBoard(int orderId, OrderStatus targetStatus);
 
 private slots:
   void onOrderSelectionChanged(const QModelIndex &current, const QModelIndex &previous);
@@ -46,10 +48,10 @@ private:
   QSortFilterProxyModel *m_proxyModel;
   OrderDetailsView *m_detailsView = nullptr;
 
-  QListWidget *m_colCreated = nullptr;
-  QListWidget *m_colInProgress = nullptr;
-  QListWidget *m_colWaitingParts = nullptr;
-  QListWidget *m_colDone = nullptr;
+  WorkflowListWidget *m_colCreated;
+  WorkflowListWidget *m_colInProgress;
+  WorkflowListWidget *m_colWaitingParts;
+  WorkflowListWidget *m_colDone;
 
   std::vector<Order> m_currentFilteredOrders;
 };

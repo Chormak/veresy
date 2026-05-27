@@ -37,6 +37,8 @@ ui/screens/FinanceScreen.h
 ui/screens/AnalyticsScreen.h
 utils/Logger.h
 utils/Logger.cpp
+ui/orders/WorkflowListWidget.h
+ui/orders/WorkflowListWidget.cpp
 )
 
 target_link_libraries(veresy PRIVATE Qt6::Widgets Qt6::Sql)
