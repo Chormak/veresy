@@ -114,6 +114,16 @@ void MainWindow::setupUi() {
     outHistory = m_orderManager->getOrderHistory(orderId);
   });
 
+  QShortcut *shortcutRefresh = new QShortcut(QKeySequence("Ctrl+R"), this);
+  connect(shortcutRefresh, &QShortcut::activated, [this]() {
+    m_orderManager->reloadFromRepository();
+  });
+
+  QShortcut *shortcutEsc = new QShortcut(QKeySequence(Qt::Key_Escape), this);
+  connect(shortcutEsc, &QShortcut::activated, [this]() {
+    m_toolbar->focusSearch();
+  });
+
   QShortcut *shortcutNew = new QShortcut(QKeySequence("Ctrl+N"), this);
   connect(shortcutNew, &QShortcut::activated, this, &MainWindow::onAddOrderClicked);
 
@@ -124,6 +134,9 @@ void MainWindow::setupUi() {
 
   QShortcut *shortcutDelete = new QShortcut(QKeySequence(Qt::Key_Delete), this);
   connect(shortcutDelete, &QShortcut::activated, [this]() {
+    if (this->focusWidget() && this->focusWidget()->inherits("QLineEdit")) {
+      return;
+    }
     QModelIndex proxyIndex = m_ordersView->tableView()->currentIndex();
     if (proxyIndex.isValid()) {
           QModelIndex originalIndex = m_ordersView->proxyModel()->mapToSource(proxyIndex);
@@ -135,6 +148,12 @@ void MainWindow::setupUi() {
 
   QShortcut *shortcutEnter = new QShortcut(QKeySequence(Qt::Key_Return), this);
   QShortcut *shortcutEnterNum = new QShortcut(QKeySequence(Qt::Key_Enter), this);
+  auto lambdaEnterEdit = [this]() {
+    if (this->focusWidget() && this->focusWidget()->inherits("QLineEdit")) {
+      return;
+    }
+    this->onEditCurrentOrderRequested();
+  };
   connect(shortcutEnter, &QShortcut::activated, this, &MainWindow::onEditCurrentOrderRequested);
   connect(shortcutEnterNum, &QShortcut::activated, this, &MainWindow::onEditCurrentOrderRequested);
 

@@ -66,7 +66,7 @@ void OrdersView::setupUi() {
 void OrdersView::updateData(const std::vector<Order>& filteredOrders, bool isFilteringActive, const std::vector<Order>& allOrders) {
     m_currentFilteredOrders = filteredOrders;
     m_view->updateData(filteredOrders, isFilteringActive);
-    updateWorkflowBoard(allOrders);
+    updateWorkflowBoard(filteredOrders);
 }
 
 void OrdersView::updateWorkflowBoard(const std::vector<Order>& allOrders) {

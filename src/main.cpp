@@ -17,7 +17,7 @@ int main (int argc, char *argv[]) {
 
   qInfo() <<"==================================================";
   qInfo() <<"APPLICATION START: Запуск системи Veresy...";
-  qInfo() <<"Режим збірки: v0.9.0-alpha";
+  qInfo() <<"Режим збірки: v0.10.0-alpha";
   qInfo() <<"STARTUP: Завантаження графічних модулів інтерфейсу...";
   Application veresyApp(argc, argv);
   qInfo() <<"=================================================";
