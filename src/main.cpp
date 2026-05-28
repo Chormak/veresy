@@ -10,16 +10,28 @@
 
 #include "app/Application.h"
 #include "utils/Logger.h"
-#include "QApplication"
+#include "core/users/UserManager.h"
+#include "ui/auth/LoginDialog.h"
+#include "ui/MainWindow.h"
 
 int main (int argc, char *argv[]) {
   Logger::init();
 
   qInfo() <<"==================================================";
   qInfo() <<"APPLICATION START: Запуск системи Veresy...";
-  qInfo() <<"Режим збірки: v0.10.0-alpha";
-  qInfo() <<"STARTUP: Завантаження графічних модулів інтерфейсу...";
+  qInfo() <<"Режим збірки: v0.10.1-alpha";
   Application veresyApp(argc, argv);
+  auto userManager = std::make_shared<UserManager>();
+
+  LoginDialog loginDialog(userManager.get());
+  if (loginDialog.exec() != QDialog::Accepted) {
+      qInfo() << "STARTUP: Вхід скасовано користувачем. Завершення.";
+      qInfo() <<"=================================================";
+      return 0;
+  }
+  qInfo() <<"STARTUP: Завантаження графічних модулів інтерфейсу...";
+  MainWindow win;
+  win.show();
   qInfo() <<"=================================================";
 
   return veresyApp.exec();

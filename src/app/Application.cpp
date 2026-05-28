@@ -19,9 +19,6 @@ Application::Application(int &argc, char **argv) {
   if (m_db->open()) {
     m_db->createTable();
   }
-
-  m_mainWindow = std::make_unique<MainWindow>();
-  m_mainWindow->show();
 }
 
 Application::~Application() {

@@ -9,6 +9,7 @@
 */
 
 #include "Database.h"
+#include <QCryptographicHash>
 
 Database::Database(const QString& path) : m_path(path) {
   m_db = QSqlDatabase::addDatabase("QSQLITE");
@@ -54,7 +55,7 @@ bool Database::createTable() {
                        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                        "order_id INTEGER NOT NULL, "
                        "old_status INTEGER, "
-                       "new_status INTAEGER NOT NULL, "
+                       "new_status INTEGER NOT NULL, "
                        "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, "
                        "comment TEXT, "
                        "performed_by TEXT DEFAULT 'admin', "
@@ -66,6 +67,34 @@ bool Database::createTable() {
     return false;
   }
 
+  QString sqlUsers = "CREATE TABLE IF NOT EXISTS users ("
+                       "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                       "username TEXT NOT NULL UNIQUE, "
+                       "display_name TEXT, "
+                       "password_hash TEXT NOT NULL, "
+                       "role TEXT NOT NULL DEFAULT 'master', "
+                       "created_at DATETIME DEFAULT CURRENT_TIMESTAMP, "
+                       "is_active INTEGER DEFAULT 1"
+                       ");";
+
+    if (!query.exec(sqlUsers)) {
+        qCritical() << "SQL Error (create users table):" << query.lastError().text();
+        return false;
+    }
+
+    query.exec("SELECT COUNT(*) FROM users");
+    if (query.next() && query.value(0).toInt() == 0) {
+        QString defaultPassword = "admin";
+        QByteArray hash = QCryptographicHash::hash(defaultPassword.toUtf8(), QCryptographicHash::Sha256);
+        QString passwordHash = QString(hash.toHex());
+
+        QSqlQuery insertAdmin;
+        insertAdmin.prepare("INSERT INTO users (username, display_name, password_hash, role) "
+                            "VALUES ('admin', 'Головний Адміністратор', :hash, 'admin')");
+        insertAdmin.bindValue(":hash", passwordHash);
+        insertAdmin.exec();
+        qInfo() << "DATABASE: Створено дефолтного користувача (admin / admin)";
+    }
   qDebug() << "Таблиці бази даних готові до роботи!";
   return true;
 }

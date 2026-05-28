@@ -39,6 +39,13 @@ utils/Logger.h
 utils/Logger.cpp
 ui/orders/WorkflowListWidget.h
 ui/orders/WorkflowListWidget.cpp
+core/users/User.h
+data/repositories/UserRepository.h
+data/repositories/UserRepository.cpp
+core/users/UserManager.h
+core/users/UserManager.cpp
+ui/auth/LoginDialog.h
+ui/auth/LoginDialog.cpp
 )
 
 target_link_libraries(veresy PRIVATE Qt6::Widgets Qt6::Sql)
