@@ -10,6 +10,7 @@
 
 #include "UserManager.h"
 #include <QCryptographicHash>
+#include "../auth/SessionManager.h"
 
 UserManager::UserManager(QObject *parent) : QObject(parent) {
     m_repository = std::make_unique<UserRepository>();
@@ -33,13 +34,14 @@ OperationResult Q_DECL_EXPORT UserManager::login(const QString& username, const 
         return OperationResult::Fail("Невірний пароль.");
     }
 
-    m_currentUser = user;
-    qInfo() << "USER ACTION: Успішний вхід користувача" << m_currentUser.username << QString("[%1]").arg(m_currentUser.role);
+    SessionManager::instance().setSession(user);
+    qInfo() << "USER ACTION [" << user.username << "]: Успішний вхід у систему. Роль:" << user.role;
 
     return OperationResult::Ok();
 }
 
 void UserManager::logout() {
-    qInfo() << "USER ACTION: Вихід користувача з системи:" << m_currentUser.username;
-    m_currentUser = User();
+    QString currentUsername = SessionManager::instance().currentUser().username;
+    SessionManager::instance().clearSession();
+    qInfo() << "USER ACTION [" << currentUsername << "]: Вихід із системи.";
 }

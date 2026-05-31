@@ -70,12 +70,17 @@ void OrderTableView::updateData(const std::vector<Order>& orders, bool isSearchi
     QModelIndex proxyIdx = currentModel->index(i, 4);
     setIndexWidget(proxyIdx, combo);
 
-    QPushButton* btnDelete = new QPushButton("Видалити", this);
-    btnDelete->setProperty("orderId", order.id);
-    connect(btnDelete, &QPushButton::clicked, [this, id = order.id](){
-      emit deleteRequested(id);
-    });
-    setIndexWidget(currentModel->index(i, 6), btnDelete);
+    if (!SessionManager::instance().isTechnician()) {
+      QPushButton* btnDelete = new QPushButton("Видалити", this);
+      btnDelete->setProperty("orderId", order.id);
+
+      connect(btnDelete, &QPushButton::clicked, [this, id = order.id](){
+        emit deleteRequested(id);
+      });
+      setIndexWidget(currentModel->index(i, 6), btnDelete);
+    } else {
+      setIndexWidget(currentModel->index(i, 6), nullptr);
+    }
   }
 }
 

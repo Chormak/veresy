@@ -46,6 +46,10 @@ core/users/UserManager.h
 core/users/UserManager.cpp
 ui/auth/LoginDialog.h
 ui/auth/LoginDialog.cpp
+core/auth/SessionManager.h
+core/auth/SessionManager.cpp
+ui/screens/UsersView.h
+ui/screens/UsersView.cpp
 )
 
 target_link_libraries(veresy PRIVATE Qt6::Widgets Qt6::Sql)

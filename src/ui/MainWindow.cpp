@@ -16,6 +16,8 @@
 #include "screens/AnalyticsScreen.h"
 #include "screens/FinanceScreen.h"
 #include "screens/InventoryScreen.h"
+#include "../core/auth/SessionManager.h"
+#include "screens/UsersView.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
   setWindowTitle("veresy");
@@ -36,6 +38,11 @@ void MainWindow::setupUi() {
   m_navigationBar->addTab("Склад");
   m_navigationBar->addTab("Аналітика");
   m_navigationBar->addTab("Фінанси");
+
+  if (SessionManager::instance().isAdmin()) {
+    m_navigationBar->addTab("Користувачі");
+  }
+
   layout->addWidget(m_navigationBar);
 
   m_screenStack = new QStackedWidget(this);
@@ -53,13 +60,10 @@ void MainWindow::setupUi() {
   ordersScreenLayout->addWidget(m_ordersView);
 
   m_screenStack->addWidget(ordersScreenWidget);
-
   m_screenStack->addWidget(new InventoryScreen(this));
   m_screenStack->addWidget(new AnalyticsScreen(this));
   m_screenStack->addWidget(new FinanceScreen(this));
-
-  
-  setCentralWidget(centralWidget);
+  m_screenStack->addWidget(new UsersView(this));
 
   m_statusTotalLabel = new QLabel(this);
   m_statusActiveLabel = new QLabel(this);
@@ -68,10 +72,22 @@ void MainWindow::setupUi() {
   statusBar()->addPermanentWidget(m_statusActiveLabel, 1);
   statusBar()->addPermanentWidget(m_statusTotalLabel, 1);
 
-  connect(m_navigationBar, &QTabBar::currentChanged, m_screenStack, &QStackedWidget::setCurrentIndex);
+  if (SessionManager::instance().isAdmin()) {
+    connect(m_navigationBar, &QTabBar::currentChanged, m_screenStack, &QStackedWidget::setCurrentIndex);
+  } else {
+    connect(m_navigationBar, &QTabBar::currentChanged, this, [this](int index) {
+      if (index == 4) {
+        m_navigationBar->setCurrentIndex(0);
+        QMessageBox::warning(this, "Доступ заборонено", "У вас немає прав доступу до керування командою.");
+      } else {
+        m_screenStack->setCurrentIndex(index);
+      }
+    });
+  }
 
   connect(m_toolbar, &AppToolbar::filtersChanged, this, &MainWindow::reloadOrders);
   connect(m_orderManager.get(), &OrderManager::ordersReloaded, this, &MainWindow::reloadOrders);
+  connect(m_toolbar, &AppToolbar::addOrderRequested, this, &MainWindow::onAddOrderClicked);
 
   connect(m_ordersView, &OrdersView::statusChanged, this, [this](int id, int index){
     OrderStatus newStatus = static_cast<OrderStatus>(index);
@@ -104,12 +120,8 @@ void MainWindow::setupUi() {
     reloadOrders();
   });
 
-  connect(m_toolbar, &AppToolbar::addOrderRequested, this, &MainWindow::onAddOrderClicked);
-  connect(m_toolbar, &AppToolbar::filtersChanged, this, &MainWindow::reloadOrders);
-
   connect(m_ordersView, &OrdersView::deleteRequested, this, &MainWindow::onDeleteOrderClicked);
   connect(m_ordersView, &OrdersView::doubleClicked, this, &MainWindow::onRowDoubleClicked);
-
   connect(m_ordersView, &OrdersView::historyRequested, this, [this](int orderId, std::vector<HistoryRecord>& outHistory){
     outHistory = m_orderManager->getOrderHistory(orderId);
   });
@@ -146,16 +158,21 @@ void MainWindow::setupUi() {
     }
   });
 
+  if (SessionManager::instance().isTechnician()) {
+      shortcutDelete->setEnabled(false);
+  }
+
   QShortcut *shortcutEnter = new QShortcut(QKeySequence(Qt::Key_Return), this);
   QShortcut *shortcutEnterNum = new QShortcut(QKeySequence(Qt::Key_Enter), this);
+
   auto lambdaEnterEdit = [this]() {
     if (this->focusWidget() && this->focusWidget()->inherits("QLineEdit")) {
       return;
     }
     this->onEditCurrentOrderRequested();
   };
-  connect(shortcutEnter, &QShortcut::activated, this, &MainWindow::onEditCurrentOrderRequested);
-  connect(shortcutEnterNum, &QShortcut::activated, this, &MainWindow::onEditCurrentOrderRequested);
+  connect(shortcutEnter, &QShortcut::activated, this, lambdaEnterEdit);
+  connect(shortcutEnterNum, &QShortcut::activated, this, lambdaEnterEdit);
 
   QTimer::singleShot(0, this, [this]() { reloadOrders(); });
 }

@@ -10,6 +10,7 @@
 
 #include "OrderManager.h"
 #include <QRegularExpression>
+#include "../../core/auth/SessionManager.h"
 
 OrderManager::OrderManager(QObject *parent) : QObject(parent) {
     m_repository = std::make_unique<OrderRepository>();
@@ -46,9 +47,19 @@ bool OrderManager::changeStatus(int id, OrderStatus newStatus) {
 }
 
 OperationResult OrderManager::deleteOrder(int id) {
+    if (SessionManager::instance().isTechnician()) {
+        qWarning() << "СПРОБА ПОРУШЕННЯ БЕЗПЕКИ [" << SessionManager::instance().currentUser().username
+                   << "]: Користувач з роллю техніка намагався видалити замовлення №" << id;
+        return OperationResult::Fail("Доступ заборонено: технік не має прав на видалення замовлень.");
+    }
+
     OperationResult ress = m_repository->deleteOrder(id);
     if (ress.success) {
-        qInfo() << "USER ACTION: Видалено замовлення №" << id << "з бази даних";
+        QString currentUsername = SessionManager::instance().currentUser().username;
+        if (currentUsername.isEmpty()) currentUsername = "system";
+
+        qInfo() << "USER ACTION [" << currentUsername << "]: Видалено замовлення №" << id << "з бази даних";
+
         emit orderDeleted();
         reloadFromRepository();
     }
@@ -73,10 +84,14 @@ OperationResult OrderManager::addOrder(const QString& name, const QString& dev, 
         auto currentOrders = m_repository->selectAllOrders();
         int newId = currentOrders.empty() ? 0 : currentOrders.front().id;
 
-        qInfo() << "USER ACTION: Створено нове замовлення №" << newId
+        QString currentUsername = SessionManager::instance().currentUser().username;
+        if (currentUsername.isEmpty()) currentUsername = "system";
+
+        qInfo() << "USER ACTION [" << currentUsername << "]: Створено нове замовлення №" << newId
                 << "| Клієнт:" << cleanName << "| Пристрій:" << cleanDevice;
 
-        m_repository->logStatusChange(newId, OrderStatus::Created, OrderStatus::Created, "Замовлення зареєстровано в системі");
+        m_repository->logStatusChange(newId, OrderStatus::Created, OrderStatus::Created, "Замовлення зареєстровано в системі", currentUsername);
+
         emit orderCreated();
         reloadFromRepository();
         return OperationResult::Ok();
@@ -153,13 +168,18 @@ OperationResult OrderManager::moveOrderToStatus(int id, OrderStatus targetStatus
             OperationResult res = updateOrder(order);
 
             if (res.success) {
-                qInfo() << "USER ACTION: Зміна статусу замовлення №" << id
+                QString currentUsername = SessionManager::instance().currentUser().username;
+                if (currentUsername.isEmpty()) currentUsername = "system";
+
+                qInfo() << "USER ACTION [" << currentUsername << "]: Зміна статусу замовлення №" << id
                         << "| З етапу:" << statusToString(oldStatus)
                         << "-> На етап:" << statusToString(targetStatus);
+
                 QString comment = QString("Статус змінено з %1 на %2")
                                    .arg(statusToString(oldStatus))
                                    .arg(statusToString(targetStatus));
-                m_repository->logStatusChange(id, oldStatus, targetStatus, comment);
+
+                m_repository->logStatusChange(id, oldStatus, targetStatus, comment, currentUsername);
             }
             return res;
         }

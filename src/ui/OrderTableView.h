@@ -16,6 +16,7 @@
 #include "OrderTableModel.h"
 #include "../core/orders/Order.h"
 #include <QPaintEvent>
+#include "../core/auth/SessionManager.h"
 
 class OrderTableView : public QTableView {
   Q_OBJECT
